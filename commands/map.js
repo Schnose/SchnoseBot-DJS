@@ -6,12 +6,9 @@ require("../functions");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("hasfilter")
-        .setDescription("Check a map's global record filters.")
-        .addStringOption((o) => o.setName("map").setDescription("Select a map.").setRequired(true))
-        .addIntegerOption((o) =>
-            o.setName("course").setDescription("Specify a course.").setRequired(false)
-        ),
+        .setName("map")
+        .setDescription("Get infomation about a map.")
+        .addStringOption((o) => o.setName("map").setDescription("Select a map.").setRequired(true)),
 
     async execute(interaction) {
         await interaction.deferReply();
@@ -21,7 +18,6 @@ module.exports = {
             if (err) return console.log(err);
             let output = interaction.options;
             let map = output.getString("map");
-            let course = output.getInteger("course") | 0;
 
             async function answer(input) {
                 await interaction.editReply(input);
@@ -56,8 +52,11 @@ module.exports = {
             }
 
             let [penisSkz, penisKzt, penisVnl] = ["❌", "❌", "❌"];
-            let [all] = await Promise.all([retard.hasFilter(mapsmap.get(map), course)]);
-            if ([all].includes("bad")) {
+            let [all, kzgo] = await Promise.all([
+                retard.hasFilter(mapsmap.get(map), 0),
+                retard.stealKZGOdata(),
+            ]);
+            if ([all, kzgo].includes("bad")) {
                 answer({ content: "API Error. Please try again later." });
                 return;
             }
@@ -71,40 +70,53 @@ module.exports = {
             if (kzt) penisKzt = "✅";
             if (vnl) penisVnl = "✅";
 
-            let title;
-            if (course > 0) {
-                title = `${map} - Filters [B${course}]`;
-            } else title = `${map} - Filters`;
+            for (let i = 0; i < kzgo.length; i++) {
+                if (kzgo[i].name == map) {
+                    kzgo = kzgo[i];
+                    break;
+                }
+            }
 
-            reply = new MessageEmbed()
+            let date2 = new Date(Date.parse(kzgo.date));
+
+            let date = `${date2.getDate().toString().padStart(2, "0")}/${date2
+                .getMonth()
+                .toString()
+                .padStart(2, "0")}/${date2.getFullYear()}`;
+
+            let embed = new MessageEmbed()
                 .setColor("#7480c2")
-                .setTitle(`${title}`)
+                .setTitle(`${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
+                )
+                .setURL(`https://kzgo.eu/maps/${map}`)
+                .setDescription(
+                    `> Tier: ${kzgo.tier}\n> Mapper: [${kzgo.mapper_name[0]}](https://steamcommunity.com/profiles/${kzgo.mapper_id64[0]})\n> Bonuses: ${kzgo.stages}\n> Globalled: \`${date}\`\n`
                 )
                 .addFields(
                     {
                         name: "SimpleKZ",
-                        value: `${penisSkz}`,
+                        value: penisSkz,
                         inline: true,
                     },
                     {
                         name: "KZTimer",
-                        value: `${penisKzt}`,
+                        value: penisKzt,
                         inline: true,
                     },
                     {
                         name: "Vanilla",
-                        value: `${penisVnl}`,
+                        value: penisVnl,
                         inline: true,
                     }
                 )
                 .setFooter({
-                    text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
+                    text: "(͡ ͡° ͜ つ ͡͡°)7 | workshopID: 2420807980 | schnose.eu/church",
                     iconURL: process.env.JOE,
                 });
 
-            return answer({ embeds: [reply] });
+            return answer({ embeds: [embed] });
         });
     },
 };
