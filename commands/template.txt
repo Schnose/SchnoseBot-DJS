@@ -1,0 +1,22 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageEmbed } = require('discord.js');
+const userSchema = require('../schemas/user-schema');
+require('dotenv').config();
+require('../functions');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Pong!'),
+
+    async execute(interaction) {
+        await interaction.deferReply();
+        let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let output = interaction.options
+
+
+        async function answer(input) {
+            await interaction.editReply(input);
+        }
+    },
+};
