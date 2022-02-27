@@ -69,9 +69,6 @@ module.exports = {
                 runtype = false;
             }
 
-            mode = encodeURIComponent(mode);
-            runtype = encodeURIComponent(runtype);
-
             const leaderboard = await retard.getTopPlayers(mode, [0], runtype);
 
             if (leaderboard == 'bad') {

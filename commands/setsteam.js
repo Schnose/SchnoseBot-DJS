@@ -13,8 +13,8 @@ module.exports = {
     async execute(interaction) {
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let output = interaction.options;
-        let steamid = encodeURIComponent(output.getString('steamid'));
-        console.log('New steamID added: ' + steamid);
+        let steamid = output.getString('steamid');
+        console.log(steamid);
 
         async function answer(input) {
             await interaction.reply(input);
@@ -22,7 +22,7 @@ module.exports = {
 
         try {
             const result = await axios.get(
-                `https://kztimerglobal.com/api/v2.0/players/steamid/${steamid}`
+                `https://kztimerglobal.com/api/v1.0/players/steamid/${steamid}`
             );
             if (!result.data[0]) {
                 reply = 'That player has never played KZ before!';
@@ -64,13 +64,12 @@ module.exports = {
             });
 
             reply = `steamID \`${steamid}\` set for player: \`${result.data[0].name}\``;
-            answer({ content: reply, ephemeral: true });
-            return;
         } catch (error) {
             reply = 'Database error.';
             answer({ content: reply, ephemeral: true });
             console.log(error);
-            return;
         }
+
+        answer({ content: reply, ephemeral: true });
     },
 };

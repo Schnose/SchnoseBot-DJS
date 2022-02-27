@@ -35,17 +35,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(encodeURIComponent(target));
+                target = retard.getIDFromMention(target);
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(encodeURIComponent(target));
+                let result = await retard.getsteamID(target);
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(encodeURIComponent(target));
+                    result = await retard.getName(target);
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -62,14 +62,12 @@ module.exports = {
             if (!steamid) {
                 if (!data.List[target]) {
                     //if target isnt registered in database
-                    reply = `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``;
+                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                     answer({ content: reply });
                     return;
                 }
                 steamid = data.List[target].steamId;
             }
-
-            steamid = encodeURIComponent(steamid);
 
             let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
                 retard.getDataRS(steamid, true, 'kz_simple'),
@@ -116,13 +114,13 @@ module.exports = {
                 runtype = 'TP';
             }
 
-            rsplace = await retard.getTopPlace(encodeURIComponent(rstime));
+            rsplace = await retard.getTopPlace(rstime);
 
             //if (rsplace) rsplace = "#" + rsplace;
 
             //console.log(rsplace);
 
-            rstimetime = retard.convertmin(encodeURIComponent(rstime.time));
+            rstimetime = retard.convertmin(rstime.time);
 
             let penisMode;
 
@@ -134,12 +132,9 @@ module.exports = {
                 penisMode = 'VNL';
             }
 
-            rstime.map_name = encodeURIComponent(rstime.map_name);
-
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${rstime.map_name} - Recent`)
-                .setURL(`https://kzgo.eu/maps/${rstime.map_name}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${rstime.map_name}.jpg`
                 )

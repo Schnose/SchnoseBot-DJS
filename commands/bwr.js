@@ -63,10 +63,6 @@ module.exports = {
             else if (penisMode === 'KZTimer') mode = 'kz_timer';
             else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
 
-            mode = encodeURIComponent(mode);
-            map = encodeURIComponent(map);
-            course = encodeURIComponent(course);
-
             let [TP, PRO] = await Promise.all([
                 retard.getDataWR(true, mode, map, course),
                 retard.getDataWR(false, mode, map, course),
@@ -86,7 +82,6 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map} - BWR ${course}`)
-                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setDescription(`Mode: ${penisMode}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
@@ -111,9 +106,6 @@ module.exports = {
             answer({ embeds: [reply] });
             return;
         } else {
-            map = encodeURIComponent(map);
-            course = encodeURIComponent(course);
-
             let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
                 retard.getDataWR(true, 'kz_simple', map, course),
                 retard.getDataWR(false, 'kz_simple', map, course),
@@ -141,7 +133,6 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map} - BWR ${course}`)
-                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                 )
