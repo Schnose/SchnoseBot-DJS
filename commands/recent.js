@@ -135,6 +135,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${rstime.map_name} - Recent`)
+                .setURL(`https://kzgo.eu/maps/${rstime.map_name}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${rstime.map_name}.jpg`
                 )

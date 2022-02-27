@@ -83,6 +83,7 @@ module.exports = {
             reply = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${title}`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                 )

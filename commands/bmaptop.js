@@ -135,6 +135,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map} - BMaptop ${course}`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`

@@ -32,3 +32,7 @@ You start by inviting the bot through [this link](https://schnose.eu/schnosebot)
 1. Set your SteamID by using `/setsteam`.
 2. Set your preferred gamemode via `/mode`.
 3. Use `/help` to get an overview over the commands.
+
+## Credits
+
+Shoutout to https://kzgo.eu/ for making our life much easier with the scuffed GlobalAPI. Check out the website, it's much more detailed than this bot and has a lot more functionality!

@@ -152,7 +152,6 @@ retard = {
             });
         return h;
     },
-
     getsteamID: async function (target) {
         let result;
         target = encodeURIComponent(target);
@@ -191,7 +190,6 @@ retard = {
 
         return result;
     },
-
     getName: async function (target) {
         let result;
         target = encodeURIComponent(target);
@@ -211,7 +209,6 @@ retard = {
 
         return result;
     },
-
     getMaps: async function () {
         let h;
         await axios

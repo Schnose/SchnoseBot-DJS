@@ -166,6 +166,7 @@ module.exports = {
                 let allResponse = new MessageEmbed()
                     .setColor('#7480c2')
                     .setTitle(`${map} - PB`)
+                    .setURL(`https://kzgo.eu/maps/${map}`)
                     .setThumbnail(
                         `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                     )
@@ -229,6 +230,7 @@ module.exports = {
                 let specificResponse = new MessageEmbed()
                     .setColor('#7480c2')
                     .setTitle(`${map} - PB`)
+                    .setURL(`https://kzgo.eu/maps/${map}`)
                     .setDescription(`Mode: ${penisMode}`)
                     .setThumbnail(
                         `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
