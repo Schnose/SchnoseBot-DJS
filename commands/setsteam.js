@@ -22,7 +22,7 @@ module.exports = {
 
         try {
             const result = await axios.get(
-                `https://kztimerglobal.com/api/v1.0/players/steamid/${steamid}`
+                `https://kztimerglobal.com/api/v1.0/players/steamid/${encodeURIComponent(steamid)}`
             );
             if (!result.data[0]) {
                 reply = 'That player has never played KZ before!';

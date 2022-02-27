@@ -75,7 +75,7 @@ module.exports = {
             if (!steamid) {
                 if (!data.List[target]) {
                     //if target isnt registered in database
-                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
+                    reply = `That Player doesn't have any database entries yet. They have to set their steamID first by using \`/setsteam\``;
                     answer({ content: reply });
                     return;
                 }
@@ -85,7 +85,7 @@ module.exports = {
                 //no specified mode
                 if (!data.List[target]) {
                     //if target isnt registered in database
-                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                    reply = `That Player doesn't have any database entries yet. They have to set their steamID first by using \`/setsteam\``;
                     answer({ content: reply });
                     return;
                 }
@@ -94,7 +94,7 @@ module.exports = {
                 else if (mode == 'kz_timer') penisMode = 'KZTimer';
                 else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
                 else if (mode == 'all') {
-                    reply = 'FUCK';
+                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
                     return answer({ content: reply });
                 }
             } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
@@ -121,6 +121,9 @@ module.exports = {
                 retard.getDoableMaps(false, mode),
                 retard.getPlayer(steamid),
             ]);
+
+            //console.log(allTP);
+            //console.log(player);
 
             if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes('bad')) {
                 answer({ content: 'API Error. Please try again later.' });
