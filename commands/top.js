@@ -136,7 +136,7 @@ module.exports = {
                     }
                 )
                 .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
-            let reply = embed;
+            reply = embed;
             answer({ embeds: [embed] });
         });
         async function answer(input) {
