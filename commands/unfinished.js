@@ -179,6 +179,10 @@ module.exports = {
                 }
             });
 
+            let playerName;
+            if (!allCompleted[0]) playerName = '?';
+            else playerName = allCompleted[0].player_name;
+
             if (mapsnotdone.length == 0) {
                 reply = "You don't have any maps left to complete! Good job!";
                 answer({ content: reply });
@@ -214,7 +218,7 @@ module.exports = {
                 //     } more`
                 // )
                 .setFooter({
-                    text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${allCompleted[0].player_name} | schnose.eu/church`,
+                    text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${playerName} | schnose.eu/church`,
                     iconURL: penisJoe,
                 });
             return answer({ embeds: [embed] });
