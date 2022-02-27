@@ -22,6 +22,10 @@ module.exports = {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let output = interaction.options;
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
 
         let approx = output.getNumber('distance') + (output.getNumber('max') / 128) * 4;
         reply = `Approximated distance: \`${approx.toFixed(4)}\``;

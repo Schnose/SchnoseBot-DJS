@@ -31,6 +31,10 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -179,7 +183,7 @@ module.exports = {
                         inline: true,
                     }
                 )
-                .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: process.env.JOE });
+                .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
             return answer({ embeds: [embed] });
         });
     },

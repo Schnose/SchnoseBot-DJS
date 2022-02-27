@@ -29,6 +29,10 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -195,7 +199,7 @@ module.exports = {
                             vnltpname ||
                             vnlproname
                         } | schnose.eu/church`,
-                        iconURL: process.env.JOE,
+                        iconURL: penisJoe,
                     });
                 return answer({ embeds: [allResponse] });
             } else {
@@ -247,7 +251,7 @@ module.exports = {
                     )
                     .setFooter({
                         text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${tpName || proName} | schnose.eu/church`,
-                        iconURL: process.env.JOE,
+                        iconURL: penisJoe,
                     });
 
                 return answer({ embeds: [specificResponse] });

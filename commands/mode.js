@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const userSchema = require('../schemas/user-schema');
+require('dotenv').config();
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('mode')
@@ -18,6 +20,10 @@ module.exports = {
     async execute(interaction) {
         let output = interaction.options;
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
         let mode = output.getString('mode');
 
         userSchema.findOne(async (err, data) => {

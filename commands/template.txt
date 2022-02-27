@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const userSchema = require('../schemas/user-schema');
 require('dotenv').config();
+let JOE = Math.random() < 0.5;
 require('../functions');
 
 module.exports = {
@@ -13,6 +14,8 @@ module.exports = {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let output = interaction.options
+        if (JOE == true) JOE = process.env.JOE1
+        if (JOE == false) JOE = process.env.JOE2
 
 
         async function answer(input) {

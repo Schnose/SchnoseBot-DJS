@@ -27,6 +27,10 @@ module.exports = {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let output = interaction.options;
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
         let map = output.getString('map');
         let penisMode = output.getString('mode') || 'All 3 Modes';
         let mode;
@@ -96,7 +100,7 @@ module.exports = {
                 )
                 .setFooter({
                     text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                    iconURL: process.env.JOE,
+                    iconURL: penisJoe,
                 });
             reply = embed;
             answer({ embeds: [reply] });
@@ -157,7 +161,7 @@ module.exports = {
                 )
                 .setFooter({
                     text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                    iconURL: process.env.JOE,
+                    iconURL: penisJoe,
                 });
             reply = embed;
             answer({ embeds: [reply] });

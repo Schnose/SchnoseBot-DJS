@@ -9,6 +9,10 @@ module.exports = {
 
     async execute(interaction) {
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -34,7 +38,7 @@ module.exports = {
                                 `> userID: ${USERID}\n> steamID: ${STEAMID}\n> mode: ${MODE}`
                             )
                             .setTimestamp()
-                            .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7', iconURL: process.env.JOE });
+                            .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7', iconURL: penisJoe });
 
                         reply = embed;
                         answer({ embeds: [embed], ephemeral: true });

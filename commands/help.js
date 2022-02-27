@@ -7,12 +7,17 @@ require('../functions');
 module.exports = {
     data: new SlashCommandBuilder().setName('help').setDescription('Help!'),
     async execute(interaction) {
+        let penisJoe;
+        let whichJoe = Math.random() < 0.5;
+        if (whichJoe == true) penisJoe = process.env.JOE1;
+        if (whichJoe == false) penisJoe = process.env.JOE2;
+
         const embed = new MessageEmbed()
             .setColor('#7480c2')
             .setDescription(
                 '**(͡ ͡° ͜ つ ͡͡°)/**\n\nUse the menu below for help with specific command.\nIf you find any bugs or have any ideas for new features / improving existing ones, __*please*__ message AlphaKeks#7480c2.'
             )
-            .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: process.env.JOE });
+            .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
 
         const commandMenu = new MessageActionRow().addComponents(
             new MessageSelectMenu()
