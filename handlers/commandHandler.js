@@ -78,6 +78,11 @@ async function commandReg(client) {
         }
 
         if (interaction.isSelectMenu()) {
+            let penisJoe;
+            let whichJoe = Math.random() < 0.5;
+            if (whichJoe == true) penisJoe = process.env.JOE1;
+            if (whichJoe == false) penisJoe = process.env.JOE2;
+
             if (interaction.customId === 'commands-menu') {
                 if (interaction.values == 'setsteam-value') {
                     let embed = new MessageEmbed()
@@ -88,7 +93,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed] });
                 } else if (interaction.values == 'mode-value') {
@@ -100,7 +105,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'invite-value') {
@@ -110,7 +115,7 @@ async function commandReg(client) {
                         .setDescription(`Get a link to invite the bot to your server.`)
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'pb-value') {
@@ -122,7 +127,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'wr-value') {
@@ -134,7 +139,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'maptop-value') {
@@ -146,7 +151,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'bpb-value') {
@@ -158,7 +163,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'bwr-value') {
@@ -170,7 +175,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'bmaptop-value') {
@@ -182,7 +187,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'recent-value') {
@@ -194,7 +199,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'top-value') {
@@ -206,7 +211,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'profile-value') {
@@ -218,7 +223,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'unfinished-value') {
@@ -230,7 +235,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'nocrouch-value') {
@@ -242,7 +247,7 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 } else if (interaction.values == 'hasfilter-value') {
@@ -254,7 +259,19 @@ async function commandReg(client) {
                         )
                         .setFooter({
                             text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-                            iconURL: process.env.JOE,
+                            iconURL: penisJoe,
+                        });
+                    return interaction.update({ embeds: [embed], ephemeral: true });
+                } else if (interaction.values == 'map-value') {
+                    let embed = new MessageEmbed()
+                        .setColor('#7480c2')
+                        .setTitle(`/map`)
+                        .setDescription(
+                            `Get information like tier, mapper, workshopID & more!\nExample:\n\`\`\`\n/map kz_lionharder\n\`\`\``
+                        )
+                        .setFooter({
+                            text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
+                            iconURL: penisJoe,
                         });
                     return interaction.update({ embeds: [embed], ephemeral: true });
                 }

@@ -95,6 +95,11 @@ module.exports = {
                         value: `hasfilter-value`,
                     },
                     {
+                        label: `/map`,
+                        description: `Get detailed information on a map.`,
+                        value: `map-value`,
+                    },
+                    {
                         label: `/nocrouch`,
                         description: `Forgot to crouch on an LJ? No Problem!`,
                         value: `nocrouch-value`,
