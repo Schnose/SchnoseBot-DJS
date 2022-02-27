@@ -132,6 +132,8 @@ module.exports = {
                 penisMode = 'VNL';
             }
 
+            let timeSetOn = Date.parse(rstime.created_on) / 1000;
+
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${rstime.map_name} - Recent`)
@@ -141,7 +143,7 @@ module.exports = {
                 )
                 .addFields({
                     name: `${penisMode}`,
-                    value: `${runtype}: ${rstimetime} ${rsplace || ''}`,
+                    value: `${runtype}: ${rstimetime} ${rsplace || ''}\n\n> <t:${timeSetOn}:R>`,
                     inline: true,
                 })
                 .setFooter({
