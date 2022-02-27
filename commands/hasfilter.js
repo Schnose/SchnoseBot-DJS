@@ -24,8 +24,8 @@ module.exports = {
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
             let output = interaction.options;
-            let map = output.getString('map');
-            let course = output.getInteger('course') | 0;
+            let map = encodeURIComponent(output.getString('map'));
+            let course = encodeURIComponent(output.getInteger('course') | 0);
 
             async function answer(input) {
                 await interaction.editReply(input);
@@ -83,6 +83,7 @@ module.exports = {
             reply = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${title}`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                 )

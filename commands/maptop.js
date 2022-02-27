@@ -75,8 +75,7 @@ module.exports = {
                 if (!data.List[interaction.user.id]) {
                     //if target isnt registered in database
                     reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
-                    answer({ content: reply });
-                    return;
+                    return answer({ content: reply });
                 }
                 mode = data.List[interaction.user.id].mode;
                 if (mode == 'kz_simple') penisMode = 'SimpleKZ';
@@ -98,6 +97,10 @@ module.exports = {
             if (runtype) {
                 penisRuntype = 'TP';
             }
+
+            runtype = encodeURIComponent(runtype);
+            mode = encodeURIComponent(mode);
+            map = encodeURIComponent(map);
 
             let [Maptop] = await Promise.all([retard.getDataMaptop(runtype, mode, map, 0)]);
 
@@ -131,6 +134,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map} - Maptop`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`

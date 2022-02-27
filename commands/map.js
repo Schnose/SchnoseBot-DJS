@@ -21,7 +21,7 @@ module.exports = {
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
             let output = interaction.options;
-            let map = output.getString('map');
+            let map = encodeURIComponent(output.getString('map'));
             let penisTier;
 
             async function answer(input) {
@@ -95,6 +95,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map}`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                 )

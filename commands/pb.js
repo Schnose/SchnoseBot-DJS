@@ -71,17 +71,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(target);
+                target = retard.getIDFromMention(encodeURIComponent(target));
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(target);
+                let result = await retard.getsteamID(encodeURIComponent(target));
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(target);
+                    result = await retard.getName(encodeURIComponent(target));
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -122,6 +122,9 @@ module.exports = {
             else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
 
             if (penisMode == 'All 3 Modes') {
+                steamid = encodeURIComponent(steamid);
+                map = encodeURIComponent(map);
+
                 let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
                     retard.getDataPB(steamid, true, 'kz_simple', map, 0),
                     retard.getDataPB(steamid, false, 'kz_simple', map, 0),
@@ -166,6 +169,7 @@ module.exports = {
                 let allResponse = new MessageEmbed()
                     .setColor('#7480c2')
                     .setTitle(`${map} - PB`)
+                    .setURL(`https://kzgo.eu/maps/${map}`)
                     .setThumbnail(
                         `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
                     )
@@ -199,6 +203,10 @@ module.exports = {
                     });
                 return answer({ embeds: [allResponse] });
             } else {
+                steamid = encodeURIComponent(steamid);
+                mode = encodeURIComponent(mode);
+                map = encodeURIComponent(map);
+
                 let [TP, PRO] = await Promise.all([
                     retard.getDataPB(steamid, true, mode, map, 0),
                     retard.getDataPB(steamid, false, mode, map, 0),
@@ -229,6 +237,7 @@ module.exports = {
                 let specificResponse = new MessageEmbed()
                     .setColor('#7480c2')
                     .setTitle(`${map} - PB`)
+                    .setURL(`https://kzgo.eu/maps/${map}`)
                     .setDescription(`Mode: ${penisMode}`)
                     .setThumbnail(
                         `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`

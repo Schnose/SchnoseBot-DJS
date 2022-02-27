@@ -103,6 +103,10 @@ module.exports = {
                 penisRuntype = 'TP';
             }
 
+            runtype = encodeURIComponent(runtype);
+            mode = encodeURIComponent(mode);
+            map = encodeURIComponent(map);
+            course = encodeURIComponent(course);
             let [Maptop] = await Promise.all([retard.getDataMaptop(runtype, mode, map, course)]);
 
             //console.log(Maptop);
@@ -135,6 +139,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
                 .setTitle(`${map} - BMaptop ${course}`)
+                .setURL(`https://kzgo.eu/maps/${map}`)
                 .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`

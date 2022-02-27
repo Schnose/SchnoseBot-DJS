@@ -63,6 +63,9 @@ module.exports = {
 
             //console.log(mode);
 
+            steamid = encodeURIComponent(steamid);
+            mode = encodeURIComponent(mode);
+
             let [allTP, allPRO, allMaps, doableTP, doablePRO, player] = await Promise.all([
                 retard.getTimes(steamid, true, mode),
                 retard.getTimes(steamid, false, mode),

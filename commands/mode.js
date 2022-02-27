@@ -34,7 +34,7 @@ module.exports = {
             try {
                 if (data) {
                     if (!data.List[interaction.user.id]) {
-                        reply = `You need to set a steamID first! Use the following command:\n \`\`\`\n/setsteam <steamId>\n\`\`\``;
+                        reply = `You need to set a steamID first! Use the following command:\n \`\`\`\n/setsteam\n\`\`\``;
                         answer({ content: reply });
                         return;
                     }
@@ -80,7 +80,7 @@ module.exports = {
                     answer({ content: reply, ephemeral: true });
                     return;
                 } else {
-                    reply = `You need to set a steamID first! Use the following command:\n \`\`\`\n/setsteam <steamId>\n\`\`\``;
+                    reply = `You need to set a steamID first! Use the following command:\n \`\`\`\n/setsteam\n\`\`\``;
                     answer({ content: reply });
                     return;
                 }

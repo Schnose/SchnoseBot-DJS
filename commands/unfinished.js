@@ -60,17 +60,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(target);
+                target = retard.getIDFromMention(encodeURIComponent(target));
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(target);
+                let result = await retard.getsteamID(encodeURIComponent(target));
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(target);
+                    result = await retard.getName(encodeURIComponent(target));
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -87,7 +87,7 @@ module.exports = {
             if (!steamid) {
                 if (!data.List[target]) {
                     //if target isnt registered in database
-                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
+                    reply = `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``;
                     answer({ content: reply });
                     return;
                 }
@@ -122,6 +122,10 @@ module.exports = {
                 penisRuntype = 'TP';
             }
             if (!tier) tier = 0;
+
+            steamid = encodeURIComponent(steamid);
+            runtype = encodeURIComponent(runtype);
+            mode = encodeURIComponent(mode);
 
             let [allCompleted, allMaps, doable] = await Promise.all([
                 retard.getTimes(steamid, runtype, mode),
