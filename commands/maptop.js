@@ -82,14 +82,14 @@ module.exports = {
                 else if (mode == 'kz_timer') penisMode = 'KZTimer';
                 else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
                 else if (mode == 'all') {
-                    reply = 'Specify a mode';
+                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
                     return answer({ content: reply });
                 }
             } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
             else if (penisMode === 'KZTimer') mode = 'kz_timer';
             else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
             else {
-                reply = 'Please specify a mode.';
+                reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
                 return answer({ content: reply });
             }
 
