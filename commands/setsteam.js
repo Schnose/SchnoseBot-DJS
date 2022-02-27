@@ -16,6 +16,10 @@ module.exports = {
         let steamid = output.getString('steamid');
         console.log(steamid);
 
+        async function answer(input) {
+            await interaction.reply(input);
+        }
+
         try {
             const result = await axios.get(
                 `https://kztimerglobal.com/api/v1.0/players/steamid/${steamid}`
@@ -60,14 +64,12 @@ module.exports = {
             });
 
             reply = `steamID \`${steamid}\` set for player: \`${result.data[0].name}\``;
-            answer({ content: reply, ephemeral: true });
-            async function answer(input) {
-                await interaction.reply(input);
-            }
         } catch (error) {
             reply = 'Database error.';
             answer({ content: reply, ephemeral: true });
             console.log(error);
         }
+
+        answer({ content: reply, ephemeral: true });
     },
 };
