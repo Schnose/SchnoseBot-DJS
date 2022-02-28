@@ -1,24 +1,26 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('recent')
         .setDescription('recent PB')
+        .setDefaultPermission(true)
         .addStringOption((o) =>
             o.setName('target').setDescription('Select a Player.').setRequired(false)
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -35,17 +37,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(target);
+                target = globalFunctions.getIDFromMention(target);
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(target);
+                let result = await globalFunctions.getsteamID(target);
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(target);
+                    result = await globalFunctions.getName(target);
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -70,12 +72,12 @@ module.exports = {
             }
 
             let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
-                retard.getDataRS(steamid, true, 'kz_simple'),
-                retard.getDataRS(steamid, false, 'kz_simple'),
-                retard.getDataRS(steamid, true, 'kz_timer'),
-                retard.getDataRS(steamid, false, 'kz_timer'),
-                retard.getDataRS(steamid, true, 'kz_vanilla'),
-                retard.getDataRS(steamid, false, 'kz_vanilla'),
+                globalFunctions.getDataRS(steamid, true, 'kz_simple'),
+                globalFunctions.getDataRS(steamid, false, 'kz_simple'),
+                globalFunctions.getDataRS(steamid, true, 'kz_timer'),
+                globalFunctions.getDataRS(steamid, false, 'kz_timer'),
+                globalFunctions.getDataRS(steamid, true, 'kz_vanilla'),
+                globalFunctions.getDataRS(steamid, false, 'kz_vanilla'),
             ]);
 
             let all = [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro];
@@ -114,13 +116,13 @@ module.exports = {
                 runtype = 'TP';
             }
 
-            rsplace = await retard.getTopPlace(rstime);
+            rsplace = await globalFunctions.getTopPlace(rstime);
 
             //if (rsplace) rsplace = "#" + rsplace;
 
             //console.log(rsplace);
 
-            rstimetime = retard.convertmin(rstime.time);
+            rstimetime = globalFunctions.convertmin(rstime.time);
 
             let penisMode;
 

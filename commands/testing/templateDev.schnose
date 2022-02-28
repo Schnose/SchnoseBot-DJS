@@ -1,0 +1,19 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('test')
+        .setDescription('test')
+        .setDefaultPermission(false),
+    devOnly: true,
+
+    async execute(interaction) {
+        let reply = '(͡ ͡° ͜ つ ͡͡°)';
+
+        answer({ content: reply });
+
+        async function answer(input) {
+            await interaction.reply(input);
+        }
+    },
+};

@@ -1,18 +1,18 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
-    data: new SlashCommandBuilder().setName('h').setDescription('h'),
+    data: new SlashCommandBuilder().setName('h').setDescription('h').setDefaultPermission(true),
+    devOnly: false,
 
     async execute(interaction) {
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);

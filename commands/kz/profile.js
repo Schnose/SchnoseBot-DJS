@@ -1,14 +1,15 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
 const axios = require('axios');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('profile')
         .setDescription('yep')
+        .setDefaultPermission(true)
         .addStringOption((o) =>
             o.setName('target').setDescription('Select a Player.').setRequired(false)
         )
@@ -21,14 +22,15 @@ module.exports = {
                 .addChoice('KZT', 'KZTimer')
                 .addChoice('VNL', 'Vanilla')
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -48,17 +50,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(target);
+                target = globalFunctions.getIDFromMention(target);
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(target);
+                let result = await globalFunctions.getsteamID(target);
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(target);
+                    result = await globalFunctions.getName(target);
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -114,12 +116,12 @@ module.exports = {
             }
 
             let [allTP, allPRO, allMaps, doableTP, doablePRO, player] = await Promise.all([
-                retard.getTimes(steamid, true, mode),
-                retard.getTimes(steamid, false, mode),
-                retard.getMapsAPI(),
-                retard.getDoableMaps(true, mode),
-                retard.getDoableMaps(false, mode),
-                retard.getPlayer(steamid),
+                globalFunctions.getTimes(steamid, true, mode),
+                globalFunctions.getTimes(steamid, false, mode),
+                globalFunctions.getMapsAPI(),
+                globalFunctions.getDoableMaps(true, mode),
+                globalFunctions.getDoableMaps(false, mode),
+                globalFunctions.getPlayer(steamid),
             ]);
 
             //console.log(allTP);
@@ -224,15 +226,15 @@ module.exports = {
             }
             straveragePRO = averagePRO.toString();
             stroverallTP = overallTP.toString();
-            stroverallTP = retard.numberWithCommas(stroverallTP);
+            stroverallTP = globalFunctions.numberWithCommas(stroverallTP);
             for (let x = 0; x < 9 - stroverallTP.length; x++) {
                 line12gap += '⠀';
             }
             stroverallPRO = overallPRO.toString();
-            stroverallPRO = retard.numberWithCommas(stroverallPRO);
+            stroverallPRO = globalFunctions.numberWithCommas(stroverallPRO);
 
             let overalloverallPoints = (overallTP + overallPRO).toString();
-            overalloverallPoints = retard.numberWithCommas(overalloverallPoints);
+            overalloverallPoints = globalFunctions.numberWithCommas(overalloverallPoints);
 
             if (mode == 'kz_simple') {
                 mapsTP[0]--;

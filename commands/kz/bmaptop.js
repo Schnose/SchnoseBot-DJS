@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bmaptop')
         .setDescription(`Check a bonus top 10 leaderboard.`)
+        .setDefaultPermission(true)
         .addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
         .addStringOption((o) =>
             o
@@ -30,14 +31,15 @@ module.exports = {
         .addIntegerOption((o) =>
             o.setName('course').setDescription('Specify which BWR you want to check.')
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -52,7 +54,7 @@ module.exports = {
                 await interaction.editReply(input);
             }
 
-            let maps = await retard.getMaps();
+            let maps = await globalFunctions.getMaps();
             if (maps == 'bad') {
                 //API side error
                 reply = 'API Error! Please try again later.';
@@ -87,14 +89,14 @@ module.exports = {
                 else if (mode == 'kz_timer') penisMode = 'KZTimer';
                 else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
                 else if (mode == 'all') {
-                    reply = 'Specify a mode';
+                    reply = 'Please specify a mode.';
                     return answer({ content: reply });
                 }
             } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
             else if (penisMode === 'KZTimer') mode = 'kz_timer';
             else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
             else {
-                reply = 'Specify a mode';
+                reply = 'Please specify a mode.';
                 return answer({ content: reply });
             }
 
@@ -103,7 +105,9 @@ module.exports = {
                 penisRuntype = 'TP';
             }
 
-            let [Maptop] = await Promise.all([retard.getDataMaptop(runtype, mode, map, course)]);
+            let [Maptop] = await Promise.all([
+                globalFunctions.getDataMaptop(runtype, mode, map, course),
+            ]);
 
             //console.log(Maptop);
 
@@ -126,11 +130,9 @@ module.exports = {
                     times[i] = 'none';
                     players[i] = 'none';
                 }
-                times.push(retard.convertmin(i.time));
+                times.push(globalFunctions.convertmin(i.time));
                 players.push(i.player_name);
             });
-            //console.log(times);
-            //console.log(players);
 
             let embed = new MessageEmbed()
                 .setColor('#7480c2')

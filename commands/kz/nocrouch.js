@@ -1,13 +1,11 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const { JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('nocrouch')
         .setDescription('Approximate a nocrouch jump.')
+        .setDefaultPermission(true)
         .addNumberOption((o) =>
             o
                 .setName('distance')
@@ -17,6 +15,7 @@ module.exports = {
         .addNumberOption((o) =>
             o.setName('max').setDescription('The max speed of your nocrouch jump').setRequired(true)
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
@@ -24,8 +23,8 @@ module.exports = {
         let output = interaction.options;
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         let approx = output.getNumber('distance') + (output.getNumber('max') / 128) * 4;
         reply = `Approximated distance: \`${approx.toFixed(4)}\``;

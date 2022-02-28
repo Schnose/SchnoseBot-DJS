@@ -1,11 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('mode')
         .setDescription('Set your preferred mode.')
+        .setDefaultPermission(true)
         .addStringOption((o) =>
             o
                 .setName('mode')
@@ -16,14 +17,15 @@ module.exports = {
                 .addChoice('VNL', 'vnl')
                 .addChoice('ALL', 'all')
         ),
+    devOnly: false,
 
     async execute(interaction) {
         let output = interaction.options;
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
         let mode = output.getString('mode');
 
         userSchema.findOne(async (err, data) => {

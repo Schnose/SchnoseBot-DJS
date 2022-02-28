@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('top')
         .setDescription('Top WRs')
+        .setDefaultPermission(true)
         .addStringOption((o) =>
             o
                 .setName('runtype')
@@ -25,13 +26,15 @@ module.exports = {
                 .addChoice('KZT', 'KZTimer')
                 .addChoice('VNL', 'Vanilla')
         ),
+    devOnly: false,
+
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -69,7 +72,7 @@ module.exports = {
                 runtype = false;
             }
 
-            const leaderboard = await retard.getTopPlayers(mode, [0], runtype);
+            const leaderboard = await globalFunctions.getTopPlayers(mode, [0], runtype);
 
             if (leaderboard == 'bad') {
                 reply = 'API Error! Please try again later.';

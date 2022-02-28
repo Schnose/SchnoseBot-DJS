@@ -1,16 +1,19 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const { JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
-    data: new SlashCommandBuilder().setName('help').setDescription('Help!'),
+    data: new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('Help!')
+        .setDefaultPermission(true),
+    devOnly: false,
+
     async execute(interaction) {
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         const embed = new MessageEmbed()
             .setColor('#7480c2')

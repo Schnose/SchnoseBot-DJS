@@ -1,23 +1,12 @@
-const { Events } = require('../validation/eventNames');
 const { promisify } = require('util');
 const { glob } = require('glob');
 const PG = promisify(glob);
-const Ascii = require('ascii-table');
 
 async function eventReg(client) {
-    const Table = new Ascii('Events Loaded');
+    const Events = [];
 
     (await PG(`${process.cwd()}/events/*.js`)).map(async (file) => {
         const event = require(file);
-
-        if (!Events.includes(event.name) || !event.name) {
-            const L = file.split('/');
-            await Table.addRow(
-                `${event.name || 'MISSING'}`,
-                `⛔ Event name is either invalid or missing: ${L[6] + `/` + L[7]}`
-            );
-            return;
-        }
 
         if (event.once) {
             client.once(event.name, (...args) => event.execute(...args, client));
@@ -25,10 +14,11 @@ async function eventReg(client) {
             client.on(event.name, (...args) => event.execute(...args, client));
         }
 
-        await Table.addRow(event.name, '✔ SUCCESSFUL');
+        Events.push(event.name);
     });
 
-    console.log(Table.toString());
+    console.log('Events:');
+    console.log(Events);
 }
 
 module.exports = eventReg;

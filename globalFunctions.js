@@ -1,6 +1,31 @@
+// Package Imports
 const axios = require('axios');
+const fs = require('fs');
 
-retard = {
+globalFunctions = {
+    // for command handler
+    getFiles: function (dir, suffix) {
+        const files = fs.readdirSync(dir, {
+            withFileTypes: true,
+        });
+
+        let commandFiles = [];
+
+        for (const file of files) {
+            if (file.isDirectory()) {
+                commandFiles = [
+                    ...commandFiles,
+                    ...globalFunctions.getFiles(`${dir}/${file.name}`, suffix),
+                ];
+            } else if (file.name.endsWith(suffix)) {
+                commandFiles.push(`${dir}/${file.name}`);
+            }
+        }
+
+        return commandFiles;
+    },
+
+    // Conversions
     convertmin: function (num) {
         let millies = Math.floor(((num % 1) * 1000) / 1);
         num = Math.floor(num / 1);
@@ -32,7 +57,21 @@ retard = {
     numberWithCommas: function (x) {
         return x.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
+    getIDFromMention: function (mention) {
+        if (!mention) return;
 
+        if (mention.startsWith('<@') && mention.endsWith('>')) {
+            mention = mention.slice(2, -1);
+
+            if (mention.startsWith('!')) {
+                mention = mention.slice(1);
+            }
+
+            return mention;
+        }
+    },
+
+    // KZ
     getDataPB: async function (steamid, runtype, mode, map, stage) {
         let hh = 0;
         await axios
@@ -59,7 +98,6 @@ retard = {
 
         return hh;
     },
-
     getDataWR: async function (runtype, mode, map, stage) {
         let h;
         await axios
@@ -85,7 +123,6 @@ retard = {
             });
         return h;
     },
-
     getDataRS: async function (steamid, runtype, mode) {
         let h;
         await axios
@@ -351,19 +388,6 @@ retard = {
                 console.log(err);
             });
         return h;
-    },
-    getIDFromMention: function (mention) {
-        if (!mention) return;
-
-        if (mention.startsWith('<@') && mention.endsWith('>')) {
-            mention = mention.slice(2, -1);
-
-            if (mention.startsWith('!')) {
-                mention = mention.slice(1);
-            }
-
-            return mention;
-        }
     },
     stealKZGOdata: async function () {
         let h;

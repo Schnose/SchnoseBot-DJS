@@ -1,13 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('bwr')
-        .setDescription(`Check a BWR.`)
+        .setName('wr')
+        .setDescription(`Check a map's WR.`)
+        .setDefaultPermission(true)
         .addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
         .addStringOption((o) =>
             o
@@ -18,25 +18,23 @@ module.exports = {
                 .addChoice('KZT', 'KZTimer')
                 .addChoice('VNL', 'Vanilla')
                 .addChoice('ALL', 'All 3 Modes')
-        )
-        .addIntegerOption((o) =>
-            o.setName('course').setDescription('Specify which BWR you want to check.')
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
+
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let output = interaction.options;
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
         let map = output.getString('map');
         let penisMode = output.getString('mode') || 'All 3 Modes';
         let mode;
-        let course = output.getInteger('course') || 1;
 
-        let maps = await retard.getMaps();
+        let maps = await globalFunctions.getMaps();
         if (maps == 'bad') {
             //API side error
             reply = 'API Error! Please try again later.';
@@ -64,8 +62,8 @@ module.exports = {
             else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
 
             let [TP, PRO] = await Promise.all([
-                retard.getDataWR(true, mode, map, course),
-                retard.getDataWR(false, mode, map, course),
+                globalFunctions.getDataWR(true, mode, map, 0),
+                globalFunctions.getDataWR(false, mode, map, 0),
             ]);
 
             let all = [TP, PRO];
@@ -76,12 +74,12 @@ module.exports = {
                 return;
             }
 
-            let tpTime = retard.convertmin(TP.time);
-            let proTime = retard.convertmin(PRO.time);
+            let tpTime = globalFunctions.convertmin(TP.time);
+            let proTime = globalFunctions.convertmin(PRO.time);
 
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
-                .setTitle(`${map} - BWR ${course}`)
+                .setTitle(`${map} - WR`)
                 .setURL(`https://kzgo.eu/maps/${map}`)
                 .setDescription(`Mode: ${penisMode}`)
                 .setThumbnail(
@@ -108,12 +106,12 @@ module.exports = {
             return;
         } else {
             let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
-                retard.getDataWR(true, 'kz_simple', map, course),
-                retard.getDataWR(false, 'kz_simple', map, course),
-                retard.getDataWR(true, 'kz_timer', map, course),
-                retard.getDataWR(false, 'kz_timer', map, course),
-                retard.getDataWR(true, 'kz_vanilla', map, course),
-                retard.getDataWR(false, 'kz_vanilla', map, course),
+                globalFunctions.getDataWR(true, 'kz_simple', map, 0),
+                globalFunctions.getDataWR(false, 'kz_simple', map, 0),
+                globalFunctions.getDataWR(true, 'kz_timer', map, 0),
+                globalFunctions.getDataWR(false, 'kz_timer', map, 0),
+                globalFunctions.getDataWR(true, 'kz_vanilla', map, 0),
+                globalFunctions.getDataWR(false, 'kz_vanilla', map, 0),
             ]);
 
             let all = [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro];
@@ -124,16 +122,16 @@ module.exports = {
                 return;
             }
 
-            skztptime = retard.convertmin(skztp.time);
-            skzprotime = retard.convertmin(skzpro.time);
-            kzttptime = retard.convertmin(kzttp.time);
-            kztprotime = retard.convertmin(kztpro.time);
-            vnltptime = retard.convertmin(vnltp.time);
-            vnlprotime = retard.convertmin(vnlpro.time);
+            skztptime = globalFunctions.convertmin(skztp.time);
+            skzprotime = globalFunctions.convertmin(skzpro.time);
+            kzttptime = globalFunctions.convertmin(kzttp.time);
+            kztprotime = globalFunctions.convertmin(kztpro.time);
+            vnltptime = globalFunctions.convertmin(vnltp.time);
+            vnlprotime = globalFunctions.convertmin(vnlpro.time);
 
             let embed = new MessageEmbed()
                 .setColor('#7480c2')
-                .setTitle(`${map} - BWR ${course}`)
+                .setTitle(`${map} - WR`)
                 .setURL(`https://kzgo.eu/maps/${map}`)
                 .setThumbnail(
                     `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
@@ -142,7 +140,7 @@ module.exports = {
                     {
                         name: 'SimpleKZ',
                         value: `TP: ${skztptime} (*${
-                            skztp.player_name || '-'
+                            skztp.player_name || 'None'
                         }*)\nPRO: ${skzprotime} (*${skzpro.player_name || 'None'}*)`,
                         inline: false,
                     },

@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const userSchema = require('../../schemas/user-schema');
+const { JOE1, JOE2 } = require('../../variables.json');
+require('../../globalFunctions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('pb')
         .setDescription('map pb')
+        .setDefaultPermission(true)
         .addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
         .addStringOption((o) =>
             o.setName('target').setDescription('Select a Player.').setRequired(false)
@@ -22,14 +23,15 @@ module.exports = {
                 .addChoice('VNL', 'Vanilla')
                 .addChoice('ALL', 'All 3 Modes')
         ),
+    devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         userSchema.findOne(async (err, data) => {
             if (err) return console.log(err);
@@ -45,7 +47,7 @@ module.exports = {
                 await interaction.editReply(input);
             }
 
-            let maps = await retard.getMaps();
+            let maps = await globalFunctions.getMaps();
             if (maps == 'bad') {
                 //API side error
                 reply = 'API Error! Please try again later.';
@@ -71,17 +73,17 @@ module.exports = {
                 target = interaction.user.id;
             } else if (target.startsWith('<@') && target.endsWith('>')) {
                 //target specified with @mention
-                target = retard.getIDFromMention(target);
+                target = globalFunctions.getIDFromMention(target);
             } else {
                 //target specified with steam name/id
-                let result = await retard.getsteamID(target);
+                let result = await globalFunctions.getsteamID(target);
                 if (result == 'bad') {
                     reply = 'API Error! Please wait a moment before trying again.';
                     answer({ content: reply });
                     return;
                 }
                 if (!result) {
-                    result = await retard.getName(target);
+                    result = await globalFunctions.getName(target);
                     if (result == 'bad') {
                         reply = 'API Error! Please wait a moment before trying again.';
                         answer({ content: reply });
@@ -123,12 +125,12 @@ module.exports = {
 
             if (penisMode == 'All 3 Modes') {
                 let [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro] = await Promise.all([
-                    retard.getDataPB(steamid, true, 'kz_simple', map, 0),
-                    retard.getDataPB(steamid, false, 'kz_simple', map, 0),
-                    retard.getDataPB(steamid, true, 'kz_timer', map, 0),
-                    retard.getDataPB(steamid, false, 'kz_timer', map, 0),
-                    retard.getDataPB(steamid, true, 'kz_vanilla', map, 0),
-                    retard.getDataPB(steamid, false, 'kz_vanilla', map, 0),
+                    globalFunctions.getDataPB(steamid, true, 'kz_simple', map, 0),
+                    globalFunctions.getDataPB(steamid, false, 'kz_simple', map, 0),
+                    globalFunctions.getDataPB(steamid, true, 'kz_timer', map, 0),
+                    globalFunctions.getDataPB(steamid, false, 'kz_timer', map, 0),
+                    globalFunctions.getDataPB(steamid, true, 'kz_vanilla', map, 0),
+                    globalFunctions.getDataPB(steamid, false, 'kz_vanilla', map, 0),
                 ]);
 
                 let all = [skztp, skzpro, kzttp, kztpro, vnltp, vnlpro];
@@ -150,17 +152,17 @@ module.exports = {
                     answer({ content: reply });
                     return;
                 }
-                skztptime = retard.convertmin(skztp.time);
+                skztptime = globalFunctions.convertmin(skztp.time);
                 skztpname = skztp.player_name;
-                skzprotime = retard.convertmin(skzpro.time);
+                skzprotime = globalFunctions.convertmin(skzpro.time);
                 skzproname = skzpro.player_name;
-                kzttptime = retard.convertmin(kzttp.time);
+                kzttptime = globalFunctions.convertmin(kzttp.time);
                 kzttpname = kzttp.player_name;
-                kztprotime = retard.convertmin(kztpro.time);
+                kztprotime = globalFunctions.convertmin(kztpro.time);
                 kztproname = kztpro.player_name;
-                vnltptime = retard.convertmin(vnltp.time);
+                vnltptime = globalFunctions.convertmin(vnltp.time);
                 vnltpname = vnltp.player_name;
-                vnlprotime = retard.convertmin(vnlpro.time);
+                vnlprotime = globalFunctions.convertmin(vnlpro.time);
                 vnlproname = vnlpro.player_name;
 
                 let allResponse = new MessageEmbed()
@@ -201,8 +203,8 @@ module.exports = {
                 return answer({ embeds: [allResponse] });
             } else {
                 let [TP, PRO] = await Promise.all([
-                    retard.getDataPB(steamid, true, mode, map, 0),
-                    retard.getDataPB(steamid, false, mode, map, 0),
+                    globalFunctions.getDataPB(steamid, true, mode, map, 0),
+                    globalFunctions.getDataPB(steamid, false, mode, map, 0),
                 ]);
                 let all = [TP, PRO];
 
@@ -217,15 +219,15 @@ module.exports = {
                     return;
                 }
 
-                tpTime = retard.convertmin(TP.time);
+                tpTime = globalFunctions.convertmin(TP.time);
                 tpName = TP.player_name;
                 let tpPlace;
-                if (TP.time != 0) tpPlace = await retard.getTopPlace(TP);
+                if (TP.time != 0) tpPlace = await globalFunctions.getTopPlace(TP);
 
-                proTime = retard.convertmin(PRO.time);
+                proTime = globalFunctions.convertmin(PRO.time);
                 proName = PRO.player_name;
                 let proPlace;
-                if (PRO.time != 0) proPlace = await retard.getTopPlace(PRO);
+                if (PRO.time != 0) proPlace = await globalFunctions.getTopPlace(PRO);
 
                 let specificResponse = new MessageEmbed()
                     .setColor('#7480c2')

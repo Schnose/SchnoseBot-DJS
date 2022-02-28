@@ -1,87 +1,149 @@
-const fs = require('fs');
+// Package Imports
 const { REST } = require('@discordjs/rest');
 const { Collection, MessageEmbed } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
 require('dotenv').config();
+const { botOwner, testGuildID, mode, JOE1, JOE2 } = require('../variables.json');
+require('../globalFunctions');
 
 async function commandReg(client) {
-    const commandFiles = fs
-        .readdirSync(`${process.cwd()}\\commands`)
-        .filter((file) => file.endsWith('.js'));
-
     const commands = [];
+    const commandList = [];
+    let devCommands = [];
+    const suffix = '.js';
+    const commandFiles = globalFunctions.getFiles(`${process.cwd()}/commands`, suffix);
 
     client.commands = new Collection();
-    for (const file of commandFiles) {
-        const command = require(`${process.cwd()}\\commands\\${file}`);
-        commands.push(command.data.toJSON());
-        client.commands.set(command.data.name, command);
+
+    for (const command of commandFiles) {
+        let commandFile = require(command);
+        if (commandFile.default) commandFile = commandFile.default;
+        if (commandFile.devOnly === true) devCommands.push(commandFile.data.name);
+
+        // Developement Mode
+        if (mode === 'DEV') {
+            commands.push(commandFile.data.toJSON());
+            commandList.push(commandFile.data.name);
+            client.commands.set(commandFile.data.name, commandFile);
+            //console.log(commands);
+        }
+        // Deploy Mode
+        else if (mode === 'PROD') {
+            if (commandFile.devOnly === false) {
+                commands.push(commandFile.data.toJSON());
+                commandList.push(commandFile.data.name);
+                client.commands.set(commandFile.data.name, commandFile);
+                //console.log(commands);
+            }
+        }
+        // Incorrect config
+        else {
+            console.log('Error trying to register commands.');
+            return;
+        }
     }
 
-    const devs = ['291585142164815873', '295966419261063168'];
-
+    // On startup
     client.once('ready', () => {
         const CLIENT_ID = client.user.id;
 
         const rest = new REST({
             version: '9',
-        }).setToken(process.env.LOGIN_TOKEN);
+        }).setToken(process.env.BOT_TOKEN);
 
+        // Registering Commands
         (async () => {
             try {
-                if (process.env.MODE === 'DEV') {
-                    await rest.put(
-                        Routes.applicationGuildCommands(CLIENT_ID, process.env.GUILD_TEST),
-                        {
-                            body: commands,
-                        }
-                    );
+                // Developement mode
+                if (mode === 'DEV') {
+                    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, testGuildID), {
+                        body: commands,
+                    });
 
-                    console.log('Successfully registered commands locally:');
-                    console.log(commandFiles);
-                } else if (process.env.MODE === 'MAIN') {
+                    // Fetch guild and commands
+                    let penis = [];
+                    let Guilds = client.guilds.cache.map((guild) => guild);
+                    Guilds = Guilds.forEach((guild) => {
+                        if (guild.id === testGuildID) penis.push(guild);
+                    });
+                    let all_fetchedCommands = await penis[0].commands.fetch();
+
+                    // Get all the devOnly commands
+                    devCommands.forEach((devCommand) => {
+                        devCommands.push(
+                            all_fetchedCommands.find((command) => command.name === devCommand).id
+                        );
+                    });
+
+                    // Filter out IDs
+                    devCommands = devCommands.filter(function (el) {
+                        return el.length && el == +el;
+                    });
+
+                    console.log('devCommands:');
+                    console.log('ids: ' + devCommands);
+
+                    const permissions = [
+                        {
+                            id: botOwner,
+                            type: 'USER',
+                            permission: true,
+                        },
+                    ];
+
+                    // Assign permissions
+                    if (devCommands) {
+                        devCommands.forEach(async (devCommand) => {
+                            devCommand = await client.guilds.cache
+                                .get(testGuildID)
+                                ?.commands.fetch(devCommand);
+                            await devCommand.permissions.set({ permissions });
+                        });
+                    }
+
+                    console.log('Sucessfully registered commands locally:');
+                    console.log(commandList);
+                }
+
+                // Deploy Mode
+                else if (mode === 'PROD') {
                     await rest.put(Routes.applicationCommands(CLIENT_ID), {
                         body: commands,
                     });
-                    console.log('Successfully registered commands globally.');
-                } else {
-                    console.log('Slashcommand Error');
+
+                    console.log('Successfully registered commands globally:');
+                    console.log(commandList);
+                }
+                // Incorrect config
+                else {
+                    console.log('Error trying to register commands.');
                     return;
                 }
             } catch (err) {
-                if (err) console.error(err);
+                if (err) console.log(err);
             }
         })();
     });
 
+    // Executing Commands
     client.on('interactionCreate', async (interaction) => {
         if (interaction.isCommand() || interaction.isContextMenu()) {
             const command = client.commands.get(interaction.commandName);
 
             if (!command) return;
 
-            if (command.devOnly === true) {
-                if (!devs.includes(interaction.user.id)) {
-                    interaction.reply({
-                        content: 'You have insufficient permissions to use this command.',
-                        ephemeral: true,
-                    });
-                    return;
-                }
-            }
-
             try {
                 await command.execute(interaction);
             } catch (err) {
-                console.error(err);
+                return console.log(err);
             }
         }
 
         if (interaction.isSelectMenu()) {
             let penisJoe;
             let whichJoe = Math.random() < 0.5;
-            if (whichJoe == true) penisJoe = process.env.JOE1;
-            if (whichJoe == false) penisJoe = process.env.JOE2;
+            if (whichJoe == true) penisJoe = JOE1;
+            if (whichJoe == false) penisJoe = JOE2;
 
             if (interaction.customId === 'commands-menu') {
                 if (interaction.values == 'setsteam-value') {

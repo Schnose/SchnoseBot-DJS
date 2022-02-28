@@ -1,14 +1,16 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const axios = require('axios');
-const userSchema = require('../schemas/user-schema');
+const userSchema = require('../../schemas/user-schema');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('setsteam')
         .setDescription('Set your steamID.')
+        .setDefaultPermission(true)
         .addStringOption((o) =>
             o.setName('steamid').setDescription('e.g. STEAM_1:1:161178172').setRequired(true)
         ),
+    devOnly: false,
 
     async execute(interaction) {
         let reply = '(͡ ͡° ͜ つ ͡͡°)';

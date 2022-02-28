@@ -1,22 +1,20 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const userSchema = require('../schemas/user-schema');
-require('dotenv').config();
-require('../functions');
+const { botOwner, JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
-    devOnly: true,
     data: new SlashCommandBuilder()
         .setName('servers')
-        .setDescription('[DEV] Display the servers that the bot is currently in.'),
+        .setDescription('Display the servers that the bot is currently in.')
+        .setDefaultPermission(true),
+    devOnly: false,
 
     async execute(interaction) {
-        await interaction.deferReply();
         let reply = '(͡ ͡° ͜ つ ͡͡°)';
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
-        if (whichJoe == true) penisJoe = process.env.JOE1;
-        if (whichJoe == false) penisJoe = process.env.JOE2;
+        if (whichJoe == true) penisJoe = JOE1;
+        if (whichJoe == false) penisJoe = JOE2;
 
         let guildList = [];
 
@@ -30,11 +28,14 @@ module.exports = {
             .setDescription(`Servers:\n > ${guildList.join('\n> ')}`)
             .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
 
-        reply = embed;
+        if (interaction.user.id === botOwner) {
+            reply = embed;
+        } else reply = "You don't have access to this command.";
+
         answer({ embeds: [reply], ephemeral: true });
 
         async function answer(input) {
-            await interaction.editReply(input);
+            await interaction.reply(input);
         }
     },
 };
