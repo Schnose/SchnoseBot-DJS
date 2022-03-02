@@ -77,7 +77,7 @@ module.exports = {
                     //no specified mode
                     if (!data.List[interaction.user.id]) {
                         //if target isnt registered in database
-                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                         answer({ content: reply });
                         return;
                     }
@@ -86,14 +86,14 @@ module.exports = {
                     else if (mode == 'kz_timer') penisMode = 'KZTimer';
                     else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
                     else if (mode == 'all') {
-                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                         return answer({ content: reply });
                     }
                 } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
                 else if (penisMode === 'KZTimer') mode = 'kz_timer';
                 else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
                 else {
-                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                     return answer({ content: reply });
                 }
 

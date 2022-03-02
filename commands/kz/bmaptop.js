@@ -81,7 +81,7 @@ module.exports = {
                     //no specified mode
                     if (!data.List[interaction.user.id]) {
                         //if target isnt registered in database
-                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                         answer({ content: reply });
                         return;
                     }

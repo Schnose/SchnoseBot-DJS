@@ -90,7 +90,7 @@ module.exports = {
                 if (!steamid) {
                     if (!data.List[target]) {
                         //if target isnt registered in database
-                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
+                        reply = `That Player doesn't have any database entries yet. They have to set their steamID first by using \`/setsteam\``;
                         answer({ content: reply });
                         return;
                     }
@@ -100,7 +100,7 @@ module.exports = {
                     //no specified mode
                     if (!data.List[target]) {
                         //if target isnt registered in database
-                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                         answer({ content: reply });
                         return;
                     }
