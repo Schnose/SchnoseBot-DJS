@@ -41,157 +41,164 @@ module.exports = {
         if (whichJoe == true) penisJoe = JOE1;
         if (whichJoe == false) penisJoe = JOE2;
 
-        userSchema.findOne(async (err, data) => {
-            if (err) return console.log(err);
-            let output = interaction.options;
-            let map = output.getString('map');
-            let runtype = 'true' === output.getString('runtype');
-            let penisMode = output.getString('mode' || null);
-            let mode;
-            let course = output.getInteger('course') || 1;
+        try {
+            userSchema.findOne(async (err, data) => {
+                if (err) return console.log(err);
+                let output = interaction.options;
+                let map = output.getString('map');
+                let runtype = 'true' === output.getString('runtype');
+                let penisMode = output.getString('mode' || null);
+                let mode;
+                let course = output.getInteger('course') || 1;
 
-            async function answer(input) {
-                await interaction.editReply(input);
-            }
+                async function answer(input) {
+                    await interaction.editReply(input);
+                }
 
-            let maps = await globalFunctions.getMaps();
-            if (maps == 'bad') {
-                //API side error
-                reply = 'API Error! Please try again later.';
-                answer({ content: reply });
-                return;
-            }
-            if (!maps.includes(map)) {
-                let i;
-                for (i = 0; i < maps.length; i++) {
-                    if (maps[i].includes(map)) {
-                        map = maps[i];
-                        break;
+                let maps = await globalFunctions.getMaps();
+                if (maps == 'bad') {
+                    //API side error
+                    reply = 'API Error! Please try again later.';
+                    answer({ content: reply });
+                    return;
+                }
+                if (!maps.includes(map)) {
+                    let i;
+                    for (i = 0; i < maps.length; i++) {
+                        if (maps[i].includes(map)) {
+                            map = maps[i];
+                            break;
+                        }
+                    }
+                    if (i == maps.length) {
+                        reply = `\`${map}\` is not a valid map!`;
+                        answer({ content: reply });
+                        return;
                     }
                 }
-                if (i == maps.length) {
-                    reply = `\`${map}\` is not a valid map!`;
-                    answer({ content: reply });
-                    return;
-                }
-            }
 
-            if (!penisMode) {
-                //no specified mode
-                if (!data.List[interaction.user.id]) {
-                    //if target isnt registered in database
-                    reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
-                    answer({ content: reply });
-                    return;
-                }
-                mode = data.List[interaction.user.id].mode;
-                if (mode == 'kz_simple') penisMode = 'SimpleKZ';
-                else if (mode == 'kz_timer') penisMode = 'KZTimer';
-                else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
-                else if (mode == 'all') {
+                if (!penisMode) {
+                    //no specified mode
+                    if (!data.List[interaction.user.id]) {
+                        //if target isnt registered in database
+                        reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\`.`;
+                        answer({ content: reply });
+                        return;
+                    }
+                    mode = data.List[interaction.user.id].mode;
+                    if (mode == 'kz_simple') penisMode = 'SimpleKZ';
+                    else if (mode == 'kz_timer') penisMode = 'KZTimer';
+                    else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
+                    else if (mode == 'all') {
+                        reply = 'Please specify a mode.';
+                        return answer({ content: reply });
+                    }
+                } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
+                else if (penisMode === 'KZTimer') mode = 'kz_timer';
+                else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
+                else {
                     reply = 'Please specify a mode.';
                     return answer({ content: reply });
                 }
-            } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
-            else if (penisMode === 'KZTimer') mode = 'kz_timer';
-            else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
-            else {
-                reply = 'Please specify a mode.';
-                return answer({ content: reply });
-            }
 
-            let penisRuntype = 'PRO';
-            if (runtype) {
-                penisRuntype = 'TP';
-            }
-
-            let [Maptop] = await Promise.all([
-                globalFunctions.getDataMaptop(runtype, mode, map, course),
-            ]);
-
-            //console.log(Maptop);
-
-            if (Maptop == 'bad') {
-                reply = 'API Error! Please wait a moment before trying again.';
-                answer({ content: reply });
-                return;
-            }
-            if (Maptop == 'no data') {
-                reply = 'API Error! Please wait a moment before trying again.';
-                answer({ content: reply });
-                return;
-            }
-
-            let times = [];
-            let players = [];
-
-            Maptop.forEach((i) => {
-                if (i == undefined) {
-                    times[i] = 'none';
-                    players[i] = 'none';
+                let penisRuntype = 'PRO';
+                if (runtype) {
+                    penisRuntype = 'TP';
                 }
-                times.push(globalFunctions.convertmin(i.time));
-                players.push(i.player_name);
-            });
 
-            let embed = new MessageEmbed()
-                .setColor('#7480c2')
-                .setTitle(`${map} - BMaptop ${course}`)
-                .setURL(`https://kzgo.eu/maps/${map}`)
-                .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
-                .setThumbnail(
-                    `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
-                )
-                .addFields({ name: `[WR]  ${players[0]}`, value: `${times[0]}\n\u200B` })
-                .addFields(
-                    {
-                        name: `[#2] ${players[1] || 'none'}`,
-                        value: `${times[1] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#3] ${players[2] || 'none'}`,
-                        value: `${times[2] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#4] ${players[3] || 'none'}`,
-                        value: `${times[3] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#5] ${players[4] || 'none'}`,
-                        value: `${times[4] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#6] ${players[5] || 'none'}`,
-                        value: `${times[5] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#7] ${players[6] || 'none'}`,
-                        value: `${times[6] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#8] ${players[7] || 'none'}`,
-                        value: `${times[7] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#9] ${players[8] || 'none'}`,
-                        value: `${times[8] || '--:--'}`,
-                        inline: true,
-                    },
-                    {
-                        name: `[#10] ${players[9] || 'none'}`,
-                        value: `${times[9] || '--:--'}`,
-                        inline: true,
+                let [Maptop] = await Promise.all([
+                    globalFunctions.getDataMaptop(runtype, mode, map, course),
+                ]);
+
+                //console.log(Maptop);
+
+                if (Maptop == 'bad') {
+                    reply = 'API Error! Please wait a moment before trying again.';
+                    answer({ content: reply });
+                    return;
+                }
+                if (Maptop == 'no data') {
+                    reply = 'API Error! Please wait a moment before trying again.';
+                    answer({ content: reply });
+                    return;
+                }
+
+                let times = [];
+                let players = [];
+
+                Maptop.forEach((i) => {
+                    if (i == undefined) {
+                        times[i] = 'none';
+                        players[i] = 'none';
                     }
-                )
-                .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
-            return answer({ embeds: [embed] });
-        });
+                    times.push(globalFunctions.convertmin(i.time));
+                    players.push(i.player_name);
+                });
+
+                let embed = new MessageEmbed()
+                    .setColor('#7480c2')
+                    .setTitle(`${map} - BMaptop ${course}`)
+                    .setURL(`https://kzgo.eu/maps/${map}`)
+                    .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
+                    .setThumbnail(
+                        `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
+                    )
+                    .addFields({ name: `[WR]  ${players[0]}`, value: `${times[0]}\n\u200B` })
+                    .addFields(
+                        {
+                            name: `[#2] ${players[1] || 'none'}`,
+                            value: `${times[1] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#3] ${players[2] || 'none'}`,
+                            value: `${times[2] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#4] ${players[3] || 'none'}`,
+                            value: `${times[3] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#5] ${players[4] || 'none'}`,
+                            value: `${times[4] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#6] ${players[5] || 'none'}`,
+                            value: `${times[5] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#7] ${players[6] || 'none'}`,
+                            value: `${times[6] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#8] ${players[7] || 'none'}`,
+                            value: `${times[7] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#9] ${players[8] || 'none'}`,
+                            value: `${times[8] || '--:--'}`,
+                            inline: true,
+                        },
+                        {
+                            name: `[#10] ${players[9] || 'none'}`,
+                            value: `${times[9] || '--:--'}`,
+                            inline: true,
+                        }
+                    )
+                    .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
+                return answer({ embeds: [embed] });
+            });
+        } catch (err) {
+            console.log(err);
+            reply = `Command: ${__filename}\nServer: ${interaction.guild.name} | ${interaction.guild.id}\nUser: ${interaction.user.tag} | ${interaction.user.id}\nChannel: ${interaction.channel.name} | ${interaction.channel.id}`;
+            console.log(reply);
+            return;
+        }
     },
 };

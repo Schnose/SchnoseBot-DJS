@@ -26,11 +26,18 @@ module.exports = {
         if (whichJoe == true) penisJoe = JOE1;
         if (whichJoe == false) penisJoe = JOE2;
 
-        let approx = output.getNumber('distance') + (output.getNumber('max') / 128) * 4;
-        reply = `Approximated distance: \`${approx.toFixed(4)}\``;
+        try {
+            let approx = output.getNumber('distance') + (output.getNumber('max') / 128) * 4;
+            reply = `Approximated distance: \`${approx.toFixed(4)}\``;
 
-        answer({ content: reply });
-        return;
+            answer({ content: reply });
+            return;
+        } catch (err) {
+            console.log(err);
+            reply = `Command: ${__filename}\nServer: ${interaction.guild.name} | ${interaction.guild.id}\nUser: ${interaction.user.tag} | ${interaction.user.id}\nChannel: ${interaction.channel.name} | ${interaction.channel.id}`;
+            console.log(reply);
+            return;
+        }
 
         async function answer(input) {
             await interaction.editReply(input);

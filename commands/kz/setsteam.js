@@ -70,6 +70,9 @@ module.exports = {
             reply = 'Database error.';
             answer({ content: reply, ephemeral: true });
             console.log(error);
+            reply = `Command: ${__filename}\nServer: ${interaction.guild.name} | ${interaction.guild.id}\nUser: ${interaction.user.tag} | ${interaction.user.id}\nChannel: ${interaction.channel.name} | ${interaction.channel.id}`;
+            console.log(reply);
+            return;
         }
 
         answer({ content: reply, ephemeral: true });
