@@ -8,6 +8,7 @@ Feel free to message me on Discord: `AlphaKeks#7480`
 ## INFO
 
 ### Commands
+#### If you want more info on each command, please visit the [wiki](https://github.com/AlphaKeks/Schnose/wiki)
 
 -   /setsteam
 -   /mode
