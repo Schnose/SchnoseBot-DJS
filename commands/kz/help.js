@@ -3,12 +3,7 @@ const { MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.j
 const { JOE1, JOE2 } = require('../../variables.json');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('help')
-        .setDescription('Help!')
-        .setDefaultPermission(true),
-    devOnly: false,
-
+    data: new SlashCommandBuilder().setName('help').setDescription('Help!'),
     async execute(interaction) {
         let penisJoe;
         let whichJoe = Math.random() < 0.5;

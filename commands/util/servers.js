@@ -2,6 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { botOwner, JOE1, JOE2 } = require('../../variables.json');
 
+const devs = [botOwner, '295966419261063168'];
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('servers')
@@ -28,7 +30,7 @@ module.exports = {
             .setDescription(`Servers:\n > ${guildList.join('\n> ')}`)
             .setFooter({ text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church', iconURL: penisJoe });
 
-        if (interaction.user.id === botOwner) {
+        if (devs.includes(interaction.user.id)) {
             reply = embed;
         } else reply = "You don't have access to this command.";
 
