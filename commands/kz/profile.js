@@ -1,32 +1,32 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const userSchema = require('../../schemas/user-schema');
-const axios = require('axios');
-const { JOE1, JOE2 } = require('../../variables.json');
-require('../../globalFunctions');
+const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MessageEmbed } = require("discord.js");
+const userSchema = require("../../schemas/user-schema");
+const axios = require("axios");
+const { JOE1, JOE2 } = require("../../variables.json");
+require("../../globalFunctions");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('profile')
-        .setDescription('yep')
+        .setName("profile")
+        .setDescription("yep")
         .setDefaultPermission(true)
         .addStringOption((o) =>
-            o.setName('target').setDescription('Select a Player.').setRequired(false)
+            o.setName("target").setDescription("Select a Player.").setRequired(false)
         )
         .addStringOption((o) =>
             o
-                .setName('mode')
-                .setDescription('Select a Mode.')
+                .setName("mode")
+                .setDescription("Select a Mode.")
                 .setRequired(false)
-                .addChoice('SKZ', 'SimpleKZ')
-                .addChoice('KZT', 'KZTimer')
-                .addChoice('VNL', 'Vanilla')
+                .addChoice("SKZ", "SimpleKZ")
+                .addChoice("KZT", "KZTimer")
+                .addChoice("VNL", "Vanilla")
         ),
     devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
-        let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let reply = "(͡ ͡° ͜ つ ͡͡°)";
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
         if (whichJoe == true) penisJoe = JOE1;
@@ -36,8 +36,8 @@ module.exports = {
             userSchema.findOne(async (err, data) => {
                 if (err) return console.log(err);
                 let output = interaction.options;
-                let target = output.getString('target' || null);
-                let penisMode = output.getString('mode' || null);
+                let target = output.getString("target" || null);
+                let penisMode = output.getString("mode" || null);
 
                 let steamid;
                 let mode;
@@ -49,21 +49,21 @@ module.exports = {
                 if (target == null) {
                     //target unspecified
                     target = interaction.user.id;
-                } else if (target.startsWith('<@') && target.endsWith('>')) {
+                } else if (target.startsWith("<@") && target.endsWith(">")) {
                     //target specified with @mention
                     target = globalFunctions.getIDFromMention(target);
                 } else {
                     //target specified with steam name/id
                     let result = await globalFunctions.getsteamID(target);
-                    if (result == 'bad') {
-                        reply = 'API Error! Please wait a moment before trying again.';
+                    if (result == "bad") {
+                        reply = "API Error! Please wait a moment before trying again.";
                         answer({ content: reply });
                         return;
                     }
                     if (!result) {
                         result = await globalFunctions.getName(target);
-                        if (result == 'bad') {
-                            reply = 'API Error! Please wait a moment before trying again.';
+                        if (result == "bad") {
+                            reply = "API Error! Please wait a moment before trying again.";
                             answer({ content: reply });
                             return;
                         }
@@ -93,27 +93,27 @@ module.exports = {
                         return;
                     }
                     mode = data.List[target].mode;
-                    if (mode == 'kz_simple') penisMode = 'SimpleKZ';
-                    else if (mode == 'kz_timer') penisMode = 'KZTimer';
-                    else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
-                    else if (mode == 'all') {
+                    if (mode == "kz_simple") penisMode = "SimpleKZ";
+                    else if (mode == "kz_timer") penisMode = "KZTimer";
+                    else if (mode == "kz_vanilla") penisMode = "Vanilla";
+                    else if (mode == "all") {
                         reply = `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``;
                         return answer({ content: reply });
                     }
-                } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
-                else if (penisMode === 'KZTimer') mode = 'kz_timer';
-                else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
+                } else if (penisMode === "SimpleKZ") mode = "kz_simple";
+                else if (penisMode === "KZTimer") mode = "kz_timer";
+                else if (penisMode === "Vanilla") mode = "kz_vanilla";
 
                 let bigPenisMode;
 
                 if (data.List[target]) {
                     bigPenisMode = data.List[target].mode;
-                    if (bigPenisMode == 'kz_timer') bigPenisMode = 'KZT';
-                    else if (bigPenisMode == 'kz_simple') bigPenisMode = 'SKZ';
-                    else if (bigPenisMode == 'kz_vanilla') bigPenisMode = 'VNL';
-                    else if (bigPenisMode == 'all') bigPenisMode = 'None';
+                    if (bigPenisMode == "kz_timer") bigPenisMode = "KZT";
+                    else if (bigPenisMode == "kz_simple") bigPenisMode = "SKZ";
+                    else if (bigPenisMode == "kz_vanilla") bigPenisMode = "VNL";
+                    else if (bigPenisMode == "all") bigPenisMode = "None";
                 } else {
-                    bigPenisMode = 'None';
+                    bigPenisMode = "None";
                 }
 
                 let [allTP, allPRO, allMaps, doableTP, doablePRO, player] = await Promise.all([
@@ -128,8 +128,8 @@ module.exports = {
                 //console.log(allTP);
                 //console.log(player);
 
-                if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes('bad')) {
-                    answer({ content: 'API Error. Please try again later.' });
+                if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes("bad")) {
+                    answer({ content: "API Error. Please try again later." });
                     return;
                 }
 
@@ -141,7 +141,7 @@ module.exports = {
 
                 allMaps.forEach((i) => {
                     mapTiers.set(i.name, i.difficulty);
-                    if (doableTP.includes(i.id) && !i.name.includes('kzpro_')) {
+                    if (doableTP.includes(i.id) && !i.name.includes("kzpro_")) {
                         mapsTP[0]++;
                         mapsTP[i.difficulty]++;
                     }
@@ -161,19 +161,19 @@ module.exports = {
                 let strperccompletionPRO = [];
 
                 let overallTP = 0;
-                let stroverallTP = '';
+                let stroverallTP = "";
                 let overallPRO = 0;
-                let stroverallPRO = '';
+                let stroverallPRO = "";
                 let averageTP = 0;
-                let straverageTP = '';
+                let straverageTP = "";
                 let averagePRO = 0;
-                let straveragePRO = '';
+                let straveragePRO = "";
                 let averageTPx = 0;
                 let averagePROx = 0;
                 let TPWRs = 0;
-                let strTPWRs = '';
+                let strTPWRs = "";
                 let PROWRs = 0;
-                let strPROWRs = '';
+                let strPROWRs = "";
 
                 let mapsdone = [];
 
@@ -213,23 +213,23 @@ module.exports = {
                     //
                 });
                 strTPWRs = TPWRs.toString();
-                let line1gap = '';
+                let line1gap = "";
                 for (let x = 0; x < 3 - strTPWRs.length; x++) {
-                    line1gap += '⠀';
+                    line1gap += "⠀";
                 }
                 strPROWRs = PROWRs.toString();
                 averageTP = (overallTP / averageTPx).toFixed(2);
                 averagePRO = (overallPRO / averagePROx).toFixed(2);
                 straverageTP = averageTP.toString();
-                let line12gap = '';
+                let line12gap = "";
                 for (let x = 0; x < 6 - straverageTP.length; x++) {
-                    line12gap += '⠀';
+                    line12gap += "⠀";
                 }
                 straveragePRO = averagePRO.toString();
                 stroverallTP = overallTP.toString();
                 stroverallTP = globalFunctions.numberWithCommas(stroverallTP);
                 for (let x = 0; x < 9 - stroverallTP.length; x++) {
-                    line12gap += '⠀';
+                    line12gap += "⠀";
                 }
                 stroverallPRO = overallPRO.toString();
                 stroverallPRO = globalFunctions.numberWithCommas(stroverallPRO);
@@ -237,21 +237,21 @@ module.exports = {
                 let overalloverallPoints = (overallTP + overallPRO).toString();
                 overalloverallPoints = globalFunctions.numberWithCommas(overalloverallPoints);
 
-                if (mode == 'kz_simple') {
+                if (mode == "kz_simple") {
                     mapsTP[0]--;
                     mapsPRO[0]--;
                     mapsTP[5]--; //synergy_x has a filter
                     mapsPRO[5]--;
                 }
-                if (mode == 'kz_vanilla') {
+                if (mode == "kz_vanilla") {
                     //using kzgo api to fix scuffed vnl
                     mapsTP = [0, 0, 0, 0, 0, 0, 0, 0];
                     //const response = await axios.get("https://kzgo.eu/api/maps/completion/kz_vanilla");
                     //console.log(response);
                     await axios
-                        .get('https://kzgo.eu/api/maps/completion/kz_vanilla')
+                        .get("https://kzgo.eu/api/maps/completion/kz_vanilla")
                         .then(function (response) {
-                            let cock = response.data.tiers;
+                            let cock = response.data;
                             mapsTP[0] = cock.total;
                             for (let i = 1; i < 8; i++) {
                                 mapsTP[i] = cock[i];
@@ -261,26 +261,26 @@ module.exports = {
                         })
                         .catch((err) => {
                             console.log(err);
-                            return answer({ content: 'API error! Please try again later' });
+                            return answer({ content: "API error! Please try again later" });
                         });
                 }
                 TPcompletion.forEach((x) => {
-                    strTpcompletion.push(x.toString().padStart(3, ' '));
+                    strTpcompletion.push(x.toString().padStart(3, " "));
                 });
                 PROcompletion.forEach((x) => {
-                    strPROcompletion.push(x.toString().padStart(3, ' '));
+                    strPROcompletion.push(x.toString().padStart(3, " "));
                 });
                 mapsTP.forEach((x) => {
-                    strmapsTP.push(x.toString().padStart(3, ' '));
+                    strmapsTP.push(x.toString().padStart(3, " "));
                 });
                 mapsPRO.forEach((x) => {
-                    strmapsPRO.push(x.toString().padStart(3, ' '));
+                    strmapsPRO.push(x.toString().padStart(3, " "));
                 });
-                let gapline3 = '';
+                let gapline3 = "";
                 if (perccompletionTP[0] < 10) {
-                    gapline3 = '⠀⠀';
+                    gapline3 = "⠀⠀";
                 } else if (perccompletionTP[0] < 100) {
-                    gapline3 = '⠀';
+                    gapline3 = "⠀";
                 }
                 for (let x = 0; x < mapsTP.length; x++) {
                     if (mapsTP[x] != 0)
@@ -291,9 +291,9 @@ module.exports = {
                     else perccompletionPRO[x] = 0;
                 }
                 for (let x = 0; x < perccompletionTP.length; x++) {
-                    strperccompletionTP.push(perccompletionTP[x].toString().padStart(3, ' ') + '%');
+                    strperccompletionTP.push(perccompletionTP[x].toString().padStart(3, " ") + "%");
                     strperccompletionPRO.push(
-                        perccompletionPRO[x].toString().padStart(3, ' ') + '%'
+                        perccompletionPRO[x].toString().padStart(3, " ") + "%"
                     );
                 }
 
@@ -302,48 +302,48 @@ module.exports = {
 
                 perccompletionTP.forEach((i) => {
                     let x = Math.floor(i / 10);
-                    let bar = '';
+                    let bar = "";
                     for (let y = 0; y < x; y++) {
-                        bar += '█';
+                        bar += "█";
                     }
                     for (let y = 0; y < 10 - x; y++) {
-                        bar += '░';
+                        bar += "░";
                     }
                     barsTP.push(bar);
                 });
                 perccompletionPRO.forEach((i) => {
                     let x = Math.floor(i / 10);
-                    let bar = '';
+                    let bar = "";
                     for (let y = 0; y < x; y++) {
-                        bar += '█';
+                        bar += "█";
                     }
                     for (let y = 0; y < 10 - x; y++) {
-                        bar += '░';
+                        bar += "░";
                     }
                     barsPRO.push(bar);
                 });
                 for (let i = 1; i < mapsTP.length; i++) {
                     if (mapsTP[i] == 0) {
-                        barsTP[i] = '          No maps          ';
-                        strperccompletionTP[i] = '100%';
+                        barsTP[i] = "          No maps          ";
+                        strperccompletionTP[i] = "100%";
                     }
                     if (mapsPRO[i] == 0) {
-                        barsPRO[i] = '          No maps          ';
-                        strperccompletionPRO[i] = '100%';
+                        barsPRO[i] = "          No maps          ";
+                        strperccompletionPRO[i] = "100%";
                     }
                 }
 
                 let embed = new MessageEmbed()
-                    .setColor('#7480c2')
+                    .setColor("#7480c2")
                     .setTitle(`${penisMode} Profile - ${player.name}`)
                     .setURL(`https://steamcommunity.com/profiles/${player.steamid64}`)
                     .setDescription(
                         `\`>> TP | 🏆 WRS: ${strTPWRs}\`⠀⠀⠀⠀⠀⠀⠀${line1gap}⠀⠀⠀⠀⠀⠀\`>> PRO | 🏆 WRS: ${strPROWRs}\`
                     ─────────────────────────────────────────────────
                     \`Total Completion: ${TPcompletion[0]}/${mapsTP[0]} (${
-                            perccompletionTP[0] + '%'
+                            perccompletionTP[0] + "%"
                         })\`⠀⠀${gapline3}⠀ \`Total Completion: ${PROcompletion[0]}/${mapsPRO[0]} (${
-                            perccompletionPRO[0] + '%'
+                            perccompletionPRO[0] + "%"
                         })\`
                     
                     \`Tier 1:\` ⌠ ${barsTP[1]} ⌡ - \`${strperccompletionTP[1]}\`⠀⠀⠀⠀\`Tier 1:\` ⌠ ${
@@ -389,7 +389,7 @@ module.exports = {
                         }
                     )
                     .setFooter({
-                        text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church',
+                        text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",
                         iconURL: penisJoe,
                     });
                 reply = embed;

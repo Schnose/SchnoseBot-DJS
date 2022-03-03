@@ -1,42 +1,42 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const userSchema = require('../../schemas/user-schema');
-const axios = require('axios');
-const { JOE1, JOE2 } = require('../../variables.json');
-require('../../globalFunctions');
+const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MessageEmbed } = require("discord.js");
+const userSchema = require("../../schemas/user-schema");
+const axios = require("axios");
+const { JOE1, JOE2 } = require("../../variables.json");
+require("../../globalFunctions");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('unfinished')
-        .setDescription('show unfinished maps')
+        .setName("unfinished")
+        .setDescription("show unfinished maps")
         .setDefaultPermission(true)
-        .addStringOption((o) => o.setName('tier').setDescription('Tier filter').setRequired(false))
+        .addStringOption((o) => o.setName("tier").setDescription("Tier filter").setRequired(false))
         .addStringOption((o) =>
             o
-                .setName('runtype')
-                .setDescription('TP/PRO')
+                .setName("runtype")
+                .setDescription("TP/PRO")
                 .setRequired(false)
-                .addChoice('TP', 'true')
-                .addChoice('PRO', 'false')
+                .addChoice("TP", "true")
+                .addChoice("PRO", "false")
         )
         .addStringOption((o) =>
-            o.setName('target').setDescription('Select a Player.').setRequired(false)
+            o.setName("target").setDescription("Select a Player.").setRequired(false)
         )
         .addStringOption((o) =>
             o
-                .setName('mode')
-                .setDescription('Select a Mode.')
+                .setName("mode")
+                .setDescription("Select a Mode.")
                 .setRequired(false)
-                .addChoice('SKZ', 'SimpleKZ')
-                .addChoice('KZT', 'KZTimer')
-                .addChoice('VNL', 'Vanilla')
-                .addChoice('ALL', 'All 3 Modes')
+                .addChoice("SKZ", "SimpleKZ")
+                .addChoice("KZT", "KZTimer")
+                .addChoice("VNL", "Vanilla")
+                .addChoice("ALL", "All 3 Modes")
         ),
     devOnly: false,
 
     async execute(interaction) {
         await interaction.deferReply();
-        let reply = '(͡ ͡° ͜ つ ͡͡°)';
+        let reply = "(͡ ͡° ͜ つ ͡͡°)";
         let penisJoe;
         let whichJoe = Math.random() < 0.5;
         if (whichJoe == true) penisJoe = JOE1;
@@ -46,10 +46,10 @@ module.exports = {
             userSchema.findOne(async (err, data) => {
                 if (err) return console.log(err);
                 let output = interaction.options;
-                let tier = output.getString('tier');
-                let runtype = 'true' === output.getString('runtype');
-                let target = output.getString('target' || null);
-                let penisMode = output.getString('mode' || null);
+                let tier = output.getString("tier");
+                let runtype = "true" === output.getString("runtype");
+                let target = output.getString("target" || null);
+                let penisMode = output.getString("mode" || null);
 
                 let steamid;
                 let mode;
@@ -61,21 +61,21 @@ module.exports = {
                 if (target == null) {
                     //target unspecified
                     target = interaction.user.id;
-                } else if (target.startsWith('<@') && target.endsWith('>')) {
+                } else if (target.startsWith("<@") && target.endsWith(">")) {
                     //target specified with @mention
                     target = globalFunctions.getIDFromMention(target);
                 } else {
                     //target specified with steam name/id
                     let result = await globalFunctions.getsteamID(target);
-                    if (result == 'bad') {
-                        reply = 'API Error! Please wait a moment before trying again.';
+                    if (result == "bad") {
+                        reply = "API Error! Please wait a moment before trying again.";
                         answer({ content: reply });
                         return;
                     }
                     if (!result) {
                         result = await globalFunctions.getName(target);
-                        if (result == 'bad') {
-                            reply = 'API Error! Please wait a moment before trying again.';
+                        if (result == "bad") {
+                            reply = "API Error! Please wait a moment before trying again.";
                             answer({ content: reply });
                             return;
                         }
@@ -105,24 +105,24 @@ module.exports = {
                         return;
                     }
                     mode = data.List[target].mode;
-                    if (mode == 'kz_simple') penisMode = 'SimpleKZ';
-                    else if (mode == 'kz_timer') penisMode = 'KZTimer';
-                    else if (mode == 'kz_vanilla') penisMode = 'Vanilla';
-                    else if (mode == 'all') {
-                        reply = 'Specify a mode';
+                    if (mode == "kz_simple") penisMode = "SimpleKZ";
+                    else if (mode == "kz_timer") penisMode = "KZTimer";
+                    else if (mode == "kz_vanilla") penisMode = "Vanilla";
+                    else if (mode == "all") {
+                        reply = "Specify a mode";
                         return answer({ content: reply });
                     }
-                } else if (penisMode === 'SimpleKZ') mode = 'kz_simple';
-                else if (penisMode === 'KZTimer') mode = 'kz_timer';
-                else if (penisMode === 'Vanilla') mode = 'kz_vanilla';
+                } else if (penisMode === "SimpleKZ") mode = "kz_simple";
+                else if (penisMode === "KZTimer") mode = "kz_timer";
+                else if (penisMode === "Vanilla") mode = "kz_vanilla";
                 else {
-                    reply = 'Please specify a mode.';
+                    reply = "Please specify a mode.";
                     return answer({ content: reply });
                 }
 
-                let penisRuntype = 'PRO';
+                let penisRuntype = "PRO";
                 if (runtype) {
-                    penisRuntype = 'TP';
+                    penisRuntype = "TP";
                 }
                 if (!tier) tier = 0;
 
@@ -132,8 +132,8 @@ module.exports = {
                     globalFunctions.getDoableMaps(runtype, mode),
                 ]);
 
-                if ([allCompleted, allMaps, doable].includes('bad')) {
-                    reply = 'API Error! Please wait a moment before trying again.';
+                if ([allCompleted, allMaps, doable].includes("bad")) {
+                    reply = "API Error! Please wait a moment before trying again.";
                     answer({ content: reply });
                     return;
                 }
@@ -143,31 +143,31 @@ module.exports = {
                 allMaps.forEach((i) => {
                     mapTiers.set(i.name, i.difficulty);
                     if (doable.includes(i.id)) {
-                        if (!i.name.includes('kzpro_') || runtype == false) {
+                        if (!i.name.includes("kzpro_") || runtype == false) {
                             if (i.difficulty == tier || tier == 0) {
-                                if (!(mode == 'kz_simple' && i.name == 'kz_synergy_x'))
+                                if (!(mode == "kz_simple" && i.name == "kz_synergy_x"))
                                     mapsnotdone.push(i.name);
                             }
                         }
                     }
                 });
 
-                if (mode == 'kz_vanilla') {
+                if (mode == "kz_vanilla") {
                     mapsnotdone = [];
                     await axios
-                        .get('https://kzgo.eu/api/maps/completion/kz_vanilla')
+                        .get("https://kzgo.eu/api/maps/completion/kz_vanilla")
                         .then(function (response) {
-                            let cock = response.data.maps;
+                            let cock = response.data;
                             cock.forEach((i) => {
                                 if (i.vp == true) {
-                                    if (!i.name.includes('kzpro_') || runtype == false)
+                                    if (!i.name.includes("kzpro_") || runtype == false)
                                         if (i.tier == tier || tier == 0) mapsnotdone.push(i.name);
                                 }
                             });
                         })
                         .catch((err) => {
                             console.log(err);
-                            return answer({ content: 'API error! Please try again later' });
+                            return answer({ content: "API error! Please try again later" });
                         });
                 }
                 let mapsdone = [];
@@ -183,7 +183,7 @@ module.exports = {
                 });
 
                 let playerName;
-                if (!allCompleted[0]) playerName = '?';
+                if (!allCompleted[0]) playerName = "?";
                 else playerName = allCompleted[0].player_name;
 
                 if (mapsnotdone.length == 0) {
@@ -192,7 +192,7 @@ module.exports = {
                     return;
                 }
 
-                let text = '';
+                let text = "";
 
                 for (i = 0; i < mapsnotdone.length; i++) {
                     if (i == 10) {
@@ -202,13 +202,13 @@ module.exports = {
                     text += `> ${mapsnotdone[i]}\n`;
                 }
                 if (tier == 0) {
-                    tier = 'ALL';
+                    tier = "ALL";
                 } else {
                     tier = `[T${tier}]`;
                 }
 
                 let embed = new MessageEmbed()
-                    .setColor('#7480c2')
+                    .setColor("#7480c2")
                     .setTitle(`Uncompleted Maps - ${penisMode} ${penisRuntype} ${tier}`)
                     .setDescription(text)
                     // .setDescription(
