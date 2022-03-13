@@ -1,6 +1,6 @@
 // Package Imports
-const axios = require("axios");
-const fs = require("fs");
+const axios = require('axios');
+const fs = require('fs');
 
 globalFunctions = {
     // for command handler
@@ -13,10 +13,7 @@ globalFunctions = {
 
         for (const file of files) {
             if (file.isDirectory()) {
-                commandFiles = [
-                    ...commandFiles,
-                    ...globalFunctions.getFiles(`${dir}/${file.name}`, suffix),
-                ];
+                commandFiles = [...commandFiles, ...globalFunctions.getFiles(`${dir}/${file.name}`, suffix)];
             } else if (file.name.endsWith(suffix)) {
                 commandFiles.push(`${dir}/${file.name}`);
             }
@@ -29,41 +26,41 @@ globalFunctions = {
     convertmin: function (num) {
         let millies = Math.floor(((num % 1) * 1000) / 1);
         num = Math.floor(num / 1);
-        if (num == 0) return "None";
+        if (num == 0) return 'None';
         let hours = Math.floor(num / 60 / 60);
         let minutes = Math.floor(num / 60) - hours * 60;
         let seconds = num % 60;
 
         if (hours != 0) {
             return (
-                hours.toString().padStart(2, "0") +
-                ":" +
-                minutes.toString().padStart(2, "0") +
-                ":" +
-                seconds.toString().padStart(2, "0") +
-                "." +
-                millies.toString().padStart(3, "0")
+                hours.toString().padStart(2, '0') +
+                ':' +
+                minutes.toString().padStart(2, '0') +
+                ':' +
+                seconds.toString().padStart(2, '0') +
+                '.' +
+                millies.toString().padStart(3, '0')
             );
         } else {
             return (
-                minutes.toString().padStart(2, "0") +
-                ":" +
-                seconds.toString().padStart(2, "0") +
-                "." +
-                millies.toString().padStart(3, "0")
+                minutes.toString().padStart(2, '0') +
+                ':' +
+                seconds.toString().padStart(2, '0') +
+                '.' +
+                millies.toString().padStart(3, '0')
             );
         }
     },
     numberWithCommas: function (x) {
-        return x.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return x.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     getIDFromMention: function (mention) {
         if (!mention) return;
 
-        if (mention.startsWith("<@") && mention.endsWith(">")) {
+        if (mention.startsWith('<@') && mention.endsWith('>')) {
             mention = mention.slice(2, -1);
 
-            if (mention.startsWith("!")) {
+            if (mention.startsWith('!')) {
                 mention = mention.slice(1);
             }
 
@@ -93,7 +90,7 @@ globalFunctions = {
                 }
             })
             .catch(function (err) {
-                hh = "bad";
+                hh = 'bad';
             });
 
         return hh;
@@ -119,7 +116,7 @@ globalFunctions = {
                 } else h = data[0];
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
             });
         return h;
     },
@@ -145,7 +142,7 @@ globalFunctions = {
                 } else h = data;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
             });
         return h;
     },
@@ -161,9 +158,9 @@ globalFunctions = {
                 }
             })
             .catch(function (err) {
-                place = "bad";
+                place = 'bad';
             });
-        if (place && place != "bad") place = "[#" + place + "]";
+        if (place && place != 'bad') place = '[#' + place + ']';
         return place;
     },
     getDataMaptop: async function (runtype, mode, map, stage) {
@@ -181,11 +178,11 @@ globalFunctions = {
             .then(function (response) {
                 let data = response.data;
                 if (!response.data[0]) {
-                    h = "no data";
+                    h = 'no data';
                 } else h = data;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
             });
         return h;
     },
@@ -203,7 +200,7 @@ globalFunctions = {
                 }
             })
             .catch(function (err) {
-                result = "bad";
+                result = 'bad';
             });
 
         return result;
@@ -222,7 +219,7 @@ globalFunctions = {
                 }
             })
             .catch(function (err) {
-                result = "bad";
+                result = 'bad';
             });
 
         return result;
@@ -241,7 +238,7 @@ globalFunctions = {
                 }
             })
             .catch(function (err) {
-                result = "bad";
+                result = 'bad';
             });
 
         return result;
@@ -252,21 +249,21 @@ globalFunctions = {
             .get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
             .then(function (response) {
                 let maps = response.data;
-                let maplist = [""];
+                let maplist = [''];
                 let x = 0;
                 let maparray = Array.from(maps);
                 maparray.forEach((i) => {
-                    if (i != "\r" && i != "\n") {
+                    if (i != '\r' && i != '\n') {
                         maplist[x] += i;
-                    } else if (i == "\n") {
+                    } else if (i == '\n') {
                         x++;
-                        maplist.push("");
+                        maplist.push('');
                     }
                 });
                 h = maplist;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
                 //console.log(err);
             });
         return h;
@@ -274,35 +271,32 @@ globalFunctions = {
     getMapsAPI: async function () {
         let data;
         await axios
-            .get("https://kztimerglobal.com/api/v2.0/maps?&is_validated=true&limit=9999")
+            .get('https://kztimerglobal.com/api/v2.0/maps?&is_validated=true&limit=9999')
             .then(function (response) {
                 data = response.data;
             })
             .catch(function (err) {
-                data = "bad";
+                data = 'bad';
                 console.log(err);
             });
         return data;
     },
     getDoableMaps: async function (runtype, mode) {
-        if (mode == "kz_timer") {
+        if (mode == 'kz_timer') {
             mode = 200;
-        } else if (mode == "kz_simple") {
+        } else if (mode == 'kz_simple') {
             mode = 201;
-        } else if (mode == "kz_vanilla") {
+        } else if (mode == 'kz_vanilla') {
             mode = 202;
         } else return;
         let h;
         await axios
-            .get(
-                "https://kztimerglobal.com/api/v2.0/record_filters?stages=0&tickrates=128&limit=9999",
-                {
-                    params: {
-                        mode_ids: mode,
-                        has_teleports: runtype,
-                    },
-                }
-            )
+            .get('https://kztimerglobal.com/api/v2.0/record_filters?stages=0&tickrates=128&limit=9999', {
+                params: {
+                    mode_ids: mode,
+                    has_teleports: runtype,
+                },
+            })
             .then(function (response) {
                 let hh = response.data;
                 h = [];
@@ -311,7 +305,7 @@ globalFunctions = {
                 });
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
                 console.log(err);
             });
         return h;
@@ -330,7 +324,7 @@ globalFunctions = {
                 h = response.data;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
                 console.log(err);
             });
         return h;
@@ -352,20 +346,20 @@ globalFunctions = {
                 h = response.data;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
                 console.log(err);
             });
         return h;
     },
     getTopPlayers: async function (mode, stages, runtype) {
-        if (mode == "kz_timer") {
+        if (mode == 'kz_timer') {
             mode = 200;
-        } else if (mode == "kz_simple") {
+        } else if (mode == 'kz_simple') {
             mode = 201;
-        } else if (mode == "kz_vanilla") {
+        } else if (mode == 'kz_vanilla') {
             mode = 202;
         } else return;
-        link = "https://kztimerglobal.com/api/v2.0/records/top/world_records?";
+        link = 'https://kztimerglobal.com/api/v2.0/records/top/world_records?';
         const testparms = {
             mode_ids: mode,
             tickrates: 128,
@@ -384,7 +378,7 @@ globalFunctions = {
                 h = response.data;
             })
             .catch(function (err) {
-                h = "bad";
+                h = 'bad';
                 console.log(err);
             });
         return h;
@@ -392,13 +386,13 @@ globalFunctions = {
     stealKZGOdata: async function () {
         let h;
         await axios
-            .get("https://kzgo.eu/api/maps/")
+            .get('https://kzgo.eu/api/maps/')
             .then(function (response) {
                 h = response.data;
             })
             .catch(function (err) {
                 console.log(err);
-                h = "bad";
+                h = 'bad';
             });
         return h;
     },

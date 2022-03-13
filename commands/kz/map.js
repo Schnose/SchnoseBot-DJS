@@ -64,6 +64,7 @@ module.exports = {
                     globalFunctions.hasFilter(mapsmap.get(map), 0),
                     globalFunctions.stealKZGOdata(),
                 ]);
+
                 if ([all, kzgo].includes('bad')) {
                     answer({ content: 'API Error. Please try again later.' });
                     return;
@@ -98,16 +99,14 @@ module.exports = {
                 let embed = new MessageEmbed()
                     .setColor('#7480c2')
                     .setTitle(`${map}`)
-                    .setThumbnail(
-                        `https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`
-                    )
+                    .setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
                     .setURL(`https://kzgo.eu/maps/${map}`)
                     .setDescription(
                         `> Tier: ${kzgo.tier} (${penisTier})\n> Mapper: [${
-                            kzgo.mapper_name[0]
-                        }](https://steamcommunity.com/profiles/${
-                            kzgo.mapper_id64[0]
-                        })\n> Bonuses: ${kzgo.stages}\n> Globalled: <t:${date / 1000}:d>\n`
+                            kzgo.mapperNames[0]
+                        }](https://steamcommunity.com/profiles/${kzgo.mapperIds[0]})\n> Bonuses: ${
+                            kzgo.bonuses
+                        }\n> Globalled: <t:${date / 1000}:d>\n`
                     )
                     .addFields(
                         {
@@ -127,7 +126,7 @@ module.exports = {
                         }
                     )
                     .setFooter({
-                        text: `(͡ ͡° ͜ つ ͡͡°)7 | workshopID: ${kzgo.workshopID} | schnose.eu/church`,
+                        text: `(͡ ͡° ͜ つ ͡͡°)7 | workshopID: ${kzgo.workshopId} | schnose.eu/church`,
                         iconURL: penisJoe,
                     });
 
