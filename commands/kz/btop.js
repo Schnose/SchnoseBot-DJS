@@ -87,7 +87,7 @@ module.exports = {
 
                 let embed = new MessageEmbed()
                     .setColor('#7480c2')
-                    .setTitle(`Top WRs`)
+                    .setTitle(`Top BWRs`)
                     .setDescription(`Mode: ${penisMode} | Runtype: ${penisRuntype}`)
                     .addFields({
                         name: `[#1]  ${leaderboard[0].player_name}`,
