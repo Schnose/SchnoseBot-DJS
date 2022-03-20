@@ -8,6 +8,7 @@ I'm always happy about constructive criticism; toxicity is unnecessary and will 
 
 This Bot is a personal project of mine and I don't intend to get this on as many servers as possible. I published it to get feedback and provide people with the features of this bot as I haven't seen a similar one on any KZ Discord I am on. If you have a different bot you like more, that's fine by me!
 
+
 ## INFO
 
 ### Commands
