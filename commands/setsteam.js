@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const axios = require("axios");
 const userSchema = require("../database/user-schema");
+const globalFunctions = require("../globalFunctions");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -28,7 +29,11 @@ module.exports = {
 			}
 
 			userSchema.findOne(async (err, data) => {
-				if (err) return console.error(err);
+				if (err) {
+					console.error(err);
+					answer({ content: "Database Error.", ephemeral: true });
+					return globalFunctions.errMsg();
+				}
 
 				if (!data) {
 					new userSchema({
@@ -61,10 +66,8 @@ module.exports = {
 			reply = `steamID \`${steamid}\` set for player: \`${result.data[0].name}\``;
 		} catch (e) {
 			console.error(e);
-			console.log(
-				`Command: ${__filename}\nServer: ${interaction.guild.name} | ${interaction.guild.id}\nUser: ${interaction.user.tag} | ${interaction.user.id}\nChannel: ${interaction.channel.name} | ${interaction.channel.id}`
-			);
-			return answer({ content: "Database Error.", ephemeral: true });
+			answer({ content: "Database Error.", ephemeral: true });
+			globalFunctions.errMsg();
 		}
 
 		answer({ content: reply, ephemeral: true });

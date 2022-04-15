@@ -20,6 +20,13 @@ const globalFunctions = {
 
 		return cmdFiles;
 	},
+
+	// Default error message
+	errMsg: function () {
+		console.log(
+			`Command: ${__filename}\nServer: ${interaction.guild.name} | ${interaction.guild.id}\nUser: ${interaction.user.tag} | ${interaction.user.id}\nChannel: ${interaction.channel.name} | ${interaction.channel.id}`
+		);
+	},
 };
 
 module.exports = globalFunctions;
