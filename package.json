@@ -1,24 +1,28 @@
 {
-    "name": "v1.0",
-    "version": "1.0.0",
-    "description": "",
-    "main": "bot.js",
-    "scripts": {
-        "start": "node bot.js",
-        "dev": "nodemon bot.js"
-    },
-    "keywords": [],
-    "author": "AlphaKeks",
-    "license": "ISC",
-    "dependencies": {
-        "@discordjs/builders": "^0.12.0",
-        "@discordjs/rest": "^0.3.0",
-        "axios": "^0.26.0",
-        "discord-api-types": "^0.27.3",
-        "discord.js": "^13.6.0",
-        "dotenv": "^16.0.0",
-        "glob": "^7.2.0",
-        "mongoose": "^6.2.3",
-        "nodemon": "^2.0.15"
-    }
+	"name": "schnosebot",
+	"version": "3.0.0",
+	"description": "",
+	"main": "bot.js",
+	"scripts": {
+		"start": "node bot.js",
+		"dev": "nodemon bot.js"
+	},
+	"keywords": [
+		"KZ",
+		"Kreedz",
+		"Discord"
+	],
+	"author": "AlphaKeks",
+	"license": "GPLv3",
+	"dependencies": {
+		"@discordjs/builders": "^0.12.0",
+		"@discordjs/rest": "^0.3.0",
+		"axios": "^0.26.0",
+		"discord-api-types": "^0.27.3",
+		"discord.js": "^13.6.0",
+		"dotenv": "^16.0.0",
+		"glob": "^7.2.0",
+		"mongoose": "^6.2.3",
+		"nodemon": "^2.0.15"
+	}
 }
