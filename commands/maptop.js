@@ -109,21 +109,32 @@ module.exports = {
 				});
 			}
 
-			// TODO: actually add descriptions to the embeds and send them
+			// TODO: create buttons
 			const pages = Math.ceil(Leaderboard.length / 10);
 			const embeds = [];
 
-			pages.forEach((i) => {
+			for (let i = 0; i < pages; i++) {
+				let pageEntries = [];
+
+				for (let j = i * 10; j < i * 10 + 10; j++) {
+					if (Leaderboard[j]) {
+						pageEntries.push(Leaderboard[j]);
+					}
+				}
+
 				const embed = new MessageEmbed()
 					.setColor("#7480c2")
 					.setTitle(`${map} - Maptop`)
 					.setURL(`https://kzgo.eu/maps/${map}`)
 					.setDescription(`Mode: ${displayMode} | Runtype: ${displayRuntype}`)
 					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
-					.setFooter({ text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church", iconURL: icon });
-
+					.addFields(pageEntries)
+					.setFooter({
+						text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",
+						iconURL: icon,
+					});
 				embeds.push(embed);
-			});
+			}
 		});
 	},
 };
