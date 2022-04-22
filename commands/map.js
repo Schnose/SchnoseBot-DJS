@@ -11,7 +11,7 @@ module.exports = {
 		.addStringOption((o) => o.setName("map").setDescription("Enter a global map.").setRequired(true)),
 
 	async execute(interaction) {
-		let map = interaction.options.getString("map");
+		let map = interaction.options.getString("map").toLowerCase();
 		await interaction.deferReply();
 
 		async function answer(input) {

@@ -335,7 +335,7 @@ const globalFunctions = {
 		return place;
 	},
 
-	// Get the top 10 times on a map
+	// Get the top 100 times on a map
 	getDataMaptop: async function (runtype, mode, map, stage) {
 		let h;
 		await axios
@@ -345,7 +345,7 @@ const globalFunctions = {
 					modes_list: mode,
 					map_name: map,
 					stage: stage,
-					limit: 10,
+					limit: 100,
 				},
 			})
 			.then((response) => {
@@ -354,7 +354,8 @@ const globalFunctions = {
 					h = "no data";
 				} else h = data;
 			})
-			.catch((err) => {
+			.catch((e) => {
+				console.error(e);
 				h = "bad";
 			});
 		return h;

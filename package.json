@@ -1,7 +1,7 @@
 {
 	"name": "schnosebot",
 	"version": "3.0.0",
-	"description": "",
+	"description": "Discord Bot for CS:GO KZ Commands",
 	"main": "bot.js",
 	"scripts": {
 		"start": "node bot.js",
@@ -20,6 +20,7 @@
 		"axios": "^0.26.0",
 		"discord-api-types": "^0.27.3",
 		"discord.js": "^13.6.0",
+		"discordjs-button-pagination": "^3.0.1",
 		"dotenv": "^16.0.0",
 		"glob": "^7.2.0",
 		"mongoose": "^6.2.3",

@@ -28,7 +28,7 @@ module.exports = {
 			await interaction.editReply(input);
 		}
 
-		let map = interaction.options.getString("map");
+		let map = interaction.options.getString("map").toLowerCase();
 		let displayMode = interaction.options.getString("mode") || "All 3 Modes";
 		let mode;
 		let course = interaction.options.getInteger("course") || 1;

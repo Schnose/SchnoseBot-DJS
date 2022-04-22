@@ -31,7 +31,7 @@ module.exports = {
 			if (err)
 				return console.error(err), answer({ content: "Database Error. Please contact `AlphaKeks#9826` about this." });
 
-			let map = interaction.options.getString("map");
+			let map = interaction.options.getString("map").toLowerCase();
 			let target = interaction.options.getString("target") || null;
 			let displayMode = interaction.options.getString("mode") || null;
 			let mode;
