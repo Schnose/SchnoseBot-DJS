@@ -9,7 +9,6 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
-		let reply = "";
 		async function answer(input) {
 			await interaction.reply(input);
 		}

@@ -22,7 +22,6 @@ module.exports = {
 
 	async execute(interaction) {
 		await interaction.deferReply();
-		let reply = "";
 		async function answer(input) {
 			await interaction.editReply(input);
 		}
@@ -32,6 +31,7 @@ module.exports = {
 		let mode;
 
 		const globalMaps = await globalFunctions.getMapcycle();
+		if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
 		for (let i = 0; i < globalMaps.length; i++) {
 			if (globalMaps[i].includes(map)) {
 				map = globalMaps[i];

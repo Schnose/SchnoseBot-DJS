@@ -19,7 +19,6 @@ module.exports = {
 		),
 
 	async execute(interaction) {
-		let reply = "";
 		let mode = interaction.options.getString("mode");
 		let dbMode;
 		let displayMode;
@@ -93,8 +92,7 @@ module.exports = {
 
 				await userSchema.findOneAndUpdate(data);
 
-				reply = `Mode preference set to: \`${displayMode}\``;
-				return answer({ content: reply });
+				return answer({ content: `Mode preference set to: \`${displayMode}\`` });
 			});
 		} catch (e) {
 			console.error(e);

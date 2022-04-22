@@ -23,10 +23,7 @@ module.exports = {
 			const result = await axios.get(
 				`https://kztimerglobal.com/api/v2.0/players/steamid/${encodeURIComponent(steamid)}`
 			);
-			if (!result.data[0]) {
-				reply = "No API Data for this player.";
-				return answer({ content: reply, ephemeral: true });
-			}
+			if (!result.data[0]) return answer({ content: "No API Data for this player.", ephemeral: true });
 
 			userSchema.findOne(async (err, data) => {
 				if (err) {
@@ -62,14 +59,11 @@ module.exports = {
 					await userSchema.findOneAndUpdate(data);
 				}
 			});
-
-			reply = `steamID \`${steamid}\` set for player: \`${result.data[0].name}\``;
+			return answer({ content: `steamID \`${steamid}\` set for player: \`${result.data[0].name}\``, ephemeral: true });
 		} catch (e) {
 			console.error(e);
 			answer({ content: "Database Error.", ephemeral: true });
 			globalFunctions.errMsg();
 		}
-
-		answer({ content: reply, ephemeral: true });
 	},
 };

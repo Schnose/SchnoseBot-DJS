@@ -11,7 +11,6 @@ module.exports = {
 		.addStringOption((o) => o.setName("map").setDescription("Enter a global map.").setRequired(true)),
 
 	async execute(interaction) {
-		let reply = "";
 		let map = interaction.options.getString("map");
 		await interaction.deferReply();
 
@@ -20,6 +19,7 @@ module.exports = {
 		}
 
 		const globalMaps = await globalFunctions.getMapsAPI();
+		if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
 		const mapsMap = new Map();
 
 		for (let i = 0; i < globalMaps.length; i++) {
