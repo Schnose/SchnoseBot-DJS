@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const globalFunctions = require("../globalFunctions");
 const userSchema = require("../database/user-schema");
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageButton } = require("discord.js");
 const { icon } = require("../config.json");
+const paginationEmbed = require("discordjs-button-pagination");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -109,14 +110,13 @@ module.exports = {
 				});
 			}
 
-			// TODO: create buttons
-			const pages = Math.ceil(Leaderboard.length / 10);
+			const pages = Math.ceil(Leaderboard.length / 15);
 			const embeds = [];
 
 			for (let i = 0; i < pages; i++) {
 				let pageEntries = [];
 
-				for (let j = i * 10; j < i * 10 + 10; j++) {
+				for (let j = i * 15; j < i * 15 + 15; j++) {
 					if (Leaderboard[j]) {
 						pageEntries.push(Leaderboard[j]);
 					}
@@ -135,6 +135,13 @@ module.exports = {
 					});
 				embeds.push(embed);
 			}
+
+			const [button1, button2] = [
+				new MessageButton().setCustomId("previousbtn").setLabel("<").setStyle("PRIMARY"),
+				new MessageButton().setCustomId("nextbtn").setLabel(">").setStyle("PRIMARY"),
+			];
+
+			paginationEmbed(interaction, embeds, [button1, button2], 1000 * 60 * 5);
 		});
 	},
 };
