@@ -20,7 +20,9 @@ module.exports = {
 				.addChoice("VNL", "Vanilla")
 				.addChoice("ALL", "All 3 Modes")
 		)
-		.addIntegerOption((o) => o.setName("course").setDescription("Specify which BWR you want to check.")),
+		.addIntegerOption((o) =>
+			o.setName("course").setDescription("Specify which BWR you want to check.").setRequired(false)
+		),
 
 	async execute(interaction) {
 		await interaction.deferReply();
