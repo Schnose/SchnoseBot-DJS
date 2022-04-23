@@ -122,6 +122,28 @@ const globalFunctions = {
 		return result;
 	},
 
+	// Get Player by steamID
+	getPlayer: async function (target) {
+		let result;
+		target = encodeURIComponent(target);
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/players/steamid/${target}`)
+			.then((response) => {
+				let data = response.data;
+				try {
+					result = data[0];
+				} catch {
+					return null;
+				}
+			})
+			.catch((e) => {
+				console.error(e);
+				result = "bad";
+			});
+
+		return result;
+	},
+
 	// Get API entries for all global maps
 	getMapsAPI: async function () {
 		let data;
