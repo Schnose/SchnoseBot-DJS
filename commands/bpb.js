@@ -6,10 +6,11 @@ const { icon } = require("../config.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("pb")
-		.setDescription("Check someone's personal best on a map.")
+		.setName("bpb")
+		.setDescription("Check someone's Personal Best on a bonus of a map.")
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName("map").setDescription("Select a Map.").setRequired(true))
+		.addIntegerOption((o) => o.setName("course").setDescription("Select a Course.").setRequired(false))
 		.addStringOption((o) => o.setName("target").setDescription("Select a Player.").setRequired(false))
 		.addStringOption((o) =>
 			o
@@ -32,6 +33,7 @@ module.exports = {
 				return console.error(err), answer({ content: "Database Error. Please contact `AlphaKeks#9826` about this." });
 
 			let map = interaction.options.getString("map").toLowerCase();
+			let course = interaction.options.getInteger("course") || 1;
 			let target = interaction.options.getString("target") || null;
 			let displayMode = interaction.options.getString("mode") || null;
 			let mode;
@@ -47,6 +49,15 @@ module.exports = {
 				}
 				if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
 			}
+
+			/* Validate Course */
+			const result = await kzgoMaps();
+			let n;
+			result.forEach((i) => {
+				if (i.name === map) return (n = i.bonuses);
+			});
+
+			if (course > n) return answer({ content: "Please specify a valid course." });
 
 			/* Validate Target */
 
@@ -125,12 +136,12 @@ module.exports = {
 				// Mode unspecified
 				case "All 3 Modes":
 					let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
-						globalFunctions.getDataPB(steamID, true, "kz_simple", map, 0),
-						globalFunctions.getDataPB(steamID, false, "kz_simple", map, 0),
-						globalFunctions.getDataPB(steamID, true, "kz_timer", map, 0),
-						globalFunctions.getDataPB(steamID, false, "kz_timer", map, 0),
-						globalFunctions.getDataPB(steamID, true, "kz_vanilla", map, 0),
-						globalFunctions.getDataPB(steamID, false, "kz_vanilla", map, 0),
+						globalFunctions.getDataPB(steamID, true, "kz_simple", map, course),
+						globalFunctions.getDataPB(steamID, false, "kz_simple", map, course),
+						globalFunctions.getDataPB(steamID, true, "kz_timer", map, course),
+						globalFunctions.getDataPB(steamID, false, "kz_timer", map, course),
+						globalFunctions.getDataPB(steamID, true, "kz_vanilla", map, course),
+						globalFunctions.getDataPB(steamID, false, "kz_vanilla", map, course),
 					]);
 
 					if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes("bad"))
@@ -155,7 +166,7 @@ module.exports = {
 
 					let embed = new MessageEmbed()
 						.setColor("#7480c2")
-						.setTitle(`${map} - PB`)
+						.setTitle(`${map} - BPB ${course}`)
 						.setURL(`https://kzgo.eu/maps/${map}`)
 						.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
 						.addFields(
@@ -186,8 +197,8 @@ module.exports = {
 
 			// Mode specified
 			let [TP, PRO] = await Promise.all([
-				globalFunctions.getDataPB(steamID, true, mode, map, 0),
-				globalFunctions.getDataPB(steamID, false, mode, map, 0),
+				globalFunctions.getDataPB(steamID, true, mode, map, course),
+				globalFunctions.getDataPB(steamID, false, mode, map, course),
 			]);
 
 			if ([TP, PRO].includes("bad")) return answer({ content: "API Error. Please try again later." });
@@ -196,16 +207,16 @@ module.exports = {
 			let tpTime = globalFunctions.convertmin(TP.time);
 			let tpName = TP.player_name;
 			let tpPlace;
-			if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(PRO);
+			if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(TP);
 
 			let proTime = globalFunctions.convertmin(PRO.time);
 			let proName = PRO.player_name;
 			let proPlace;
-			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(TP);
+			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(PRO);
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
-				.setTitle(`${map} - PB`)
+				.setTitle(`${map} - BPB ${course}`)
 				.setURL(`https://kzgo.eu/maps/${map}`)
 				.setDescription(`Mode: ${displayMode}`)
 				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)

@@ -325,10 +325,11 @@ const globalFunctions = {
 				if (data) {
 					place = data;
 				} else {
-					//place = null;
+					place = null;
 				}
 			})
-			.catch((err) => {
+			.catch((e) => {
+				console.error(e);
 				place = "bad";
 			});
 		if (place && place != "bad") place = "[#" + place + "]";
