@@ -361,6 +361,41 @@ const globalFunctions = {
 			});
 		return h;
 	},
+
+	// Get the Top 100 WR Holders
+	getTopPlayers: async function (mode, stages, runtype) {
+		if (mode == "kz_timer") {
+			mode = 200;
+		} else if (mode == "kz_simple") {
+			mode = 201;
+		} else if (mode == "kz_vanilla") {
+			mode = 202;
+		} else return;
+
+		let link = "https://kztimerglobal.com/api/v2.0/records/top/world_records?";
+		stages.forEach((i) => {
+			link += `stages=${i}&`;
+		});
+
+		let h;
+		await axios
+			.get(link, {
+				params: {
+					mode_ids: mode,
+					tickrates: 128,
+					limit: 100,
+					has_teleports: runtype,
+				},
+			})
+			.then((response) => {
+				h = response.data;
+			})
+			.catch((e) => {
+				console.error(e);
+				h = "bad";
+			});
+		return h;
+	},
 };
 
 module.exports = globalFunctions;
