@@ -45,7 +45,7 @@ module.exports = {
 		}
 
 		/* Validate Course */
-		const result = await kzgoMaps();
+		const result = await globalFunctions.kzgoMaps();
 		let n;
 		result.forEach((i) => {
 			if (i.name === map) return (n = i.bonuses);
