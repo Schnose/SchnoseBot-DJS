@@ -29,7 +29,7 @@ module.exports = {
 		}
 
 		userSchema.findOne(async (err, data) => {
-			if (err) return console.log(err);
+			if (err) return console.error(err);
 
 			let runtype = interaction.options.getString("runtype") || false;
 			let displayRuntype;

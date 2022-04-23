@@ -18,7 +18,7 @@ module.exports = {
 		}
 
 		userSchema.findOne(async (err, data) => {
-			if (err) return console.log(err);
+			if (err) return console.error(err);
 
 			let map = interaction.options.getString("map").toLowerCase();
 			let course = interaction.options.getInteger("course") || 0;
