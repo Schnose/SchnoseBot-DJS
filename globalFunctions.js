@@ -396,6 +396,30 @@ const globalFunctions = {
 			});
 		return h;
 	},
+
+	// Get all times of a player
+	getTimes: async function (steamid, runtype, mode) {
+		let h;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
+				params: {
+					has_teleports: runtype,
+					modes_list: mode,
+					steam_id: steamid,
+					tickrate: 128,
+					limit: 9999,
+					stage: 0,
+				},
+			})
+			.then((response) => {
+				h = response.data;
+			})
+			.catch((e) => {
+				console.error(e);
+				h = "bad";
+			});
+		return h;
+	},
 };
 
 module.exports = globalFunctions;
