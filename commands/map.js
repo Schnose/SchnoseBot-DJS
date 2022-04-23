@@ -18,6 +18,7 @@ module.exports = {
 			await interaction.editReply(input);
 		}
 
+		/* Validate Map */
 		const globalMaps = await globalFunctions.getMapsAPI();
 		if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
 		const mapsMap = new Map();
