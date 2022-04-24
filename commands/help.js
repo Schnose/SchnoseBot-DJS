@@ -19,7 +19,7 @@ module.exports = {
 			.setColor("#7480c2")
 			.setTitle("Help Menu")
 			.setDescription(
-				"**(͡ ͡° ͜ つ ͡͡°)/**\n\nUse the menu below to get information on any command.\nIf you find any bugs or have any ideas for new features / improving existing ones, __*please*__ message `AlphaKeks#9826`.\n\nGitHub Page: https://github.com/AlphaKeks/Schnose\nSteam Group: https://schnose.eu/church"
+				"**(͡ ͡° ͜ つ ͡͡°)/**\n\nUse the menu below to get information on any command.\nIf you find any bugs or have any ideas for new features / improving existing ones, __*please*__ message `AlphaKeks#9826`.\n\nGitHub Page: https://github.com/Schnose/Schnose-DJS\nSteam Group: https://schnose.eu/church"
 			)
 			.setFooter({ text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church", iconURL: icon });
 
