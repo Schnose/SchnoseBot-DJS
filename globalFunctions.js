@@ -78,6 +78,16 @@ const globalFunctions = {
 		);
 	},
 
+	// Check GlobalAPI Status
+	checkAPI: async function () {
+		let result;
+		await axios
+			.get("https://kztimerglobal.com/api/v2.0/modes")
+			.then((response) => (result = response.data))
+			.catch((e) => (result = "bad"));
+		return result;
+	},
+
 	// Get Player by steamID
 	getSteamID: async function (target) {
 		let result;
