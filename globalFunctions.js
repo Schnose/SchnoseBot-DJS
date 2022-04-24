@@ -174,13 +174,13 @@ const globalFunctions = {
 		let h;
 		await axios
 			.get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
-			.then(function (response) {
+			.then((response) => {
 				const maps = response.data;
 				let mapList = [];
 				mapList = maps.split("\r\n");
 				h = mapList;
 			})
-			.catch(function (e) {
+			.catch((e) => {
 				h = "bad";
 				console.error(e);
 			});
