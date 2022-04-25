@@ -85,6 +85,7 @@ module.exports = {
 			else runtype = "TP";
 
 			let recentPlace = await globalFunctions.getPlace(recent);
+			if (recentPlace === "bad") recentPlace = "";
 			let recentTime = globalFunctions.convertmin(recent.time);
 
 			let mode;

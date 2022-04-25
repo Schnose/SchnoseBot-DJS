@@ -202,6 +202,8 @@ module.exports = {
 			let proName = PRO.player_name;
 			let proPlace;
 			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(TP);
+			if (tpPlace === "bad") tpPlace = "";
+			if (proPlace === "bad") proPlace = "";
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")

@@ -214,6 +214,9 @@ module.exports = {
 			let proPlace;
 			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(PRO);
 
+			if (tpPlace === "bad") tpPlace = "";
+			if (proPlace === "bad") proPlace = "";
+
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
 				.setTitle(`${map} - BPB ${course}`)
