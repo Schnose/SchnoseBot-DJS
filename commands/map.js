@@ -120,7 +120,7 @@ module.exports = {
 				.setURL(`https://kzgo.eu/maps/${map}`)
 				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
 				.setDescription(
-					`> API Tier: ${apiTier} (${displayTier})\n> Community Tiers:\n> SKZ: ${skzTier}\n> KZT: ${kztTier}\n> VNL: ${vnlTier}\n> Mapper(s): ${mappers.join(
+					`> API Tier: ${apiTier} (${displayTier})\n> [Community Tiers](https://tiers.schnose.eu) (TP | PRO):\n> SKZ: ${skzTier}\n> KZT: ${kztTier}\n> VNL: ${vnlTier}\n> Mapper(s): ${mappers.join(
 						", "
 					)}\n> Bonuses: ${kzgoData.bonuses}\n> Globalled: <t:${createdAt / 1000}:d>\n\nFilters:`
 				)
