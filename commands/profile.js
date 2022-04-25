@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
 const userSchema = require("../database/user-schema");
 const globalFunctions = require("../globalFunctions");
+const axios = require("axios");
 const { icon } = require("../config.json");
 
 module.exports = {

@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
 const globalFunctions = require("../globalFunctions");
 const { icon } = require("../config.json");
+const sheetSchema = require("../database/sheet-schema");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -93,43 +94,59 @@ module.exports = {
 				break;
 		}
 
-		let mappers = [];
-		for (let i = 0; i < kzgoData.mapperNames.length; i++) {
-			mappers.push(`[${kzgoData.mapperNames[i]}](https://steamcommunity.com/profiles/${kzgoData.mapperIds[i]})`);
-		}
+		let [skzTier, kztTier, vnlTier] = ["", "", ""];
 
-		const embed = new MessageEmbed()
-			.setColor("#7480c2")
-			.setTitle(map)
-			.setURL(`https://kzgo.eu/maps/${map}`)
-			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
-			.setDescription(
-				`> API Tier: ${apiTier} (${displayTier})\n> Mapper(s): ${mappers.join(", ")}\n> Bonuses: ${
-					kzgoData.bonuses
-				}\n> Globalled: <t:${createdAt / 1000}:d>\n\nFilters:`
-			)
-			.addFields(
-				{
-					name: "SimpleKZ",
-					value: filterSKZ,
-					inline: true,
-				},
-				{
-					name: "KZTimer",
-					value: filterKZT,
-					inline: true,
-				},
-				{
-					name: "Vanilla",
-					value: filterVNL,
-					inline: true,
-				}
-			)
-			.setFooter({
-				text: `(͡ ͡° ͜ つ ͡͡°)7 | workshopID: ${kzgoData.workshopId} | schnose.eu/church`,
-				iconURL: icon,
-			});
+		sheetSchema.findOne(async (err, data) => {
+			if (err || !data) {
+				console.error(err);
+				[skzTier, kztTier, vnlTier] = ["N/A", "N/A", "N/A"];
+			}
 
-		return answer({ embeds: [embed] });
+			const dbMap = data.mapList[map].main;
+			[skzTier, kztTier, vnlTier] = [
+				`${dbMap.SKZ?.tpTier || "N/A"} | ${dbMap.SKZ?.proTier || "N/A"}`,
+				`${dbMap.KZT?.tpTier || "N/A"} | ${dbMap.KZT?.proTier || "N/A"}`,
+				`${dbMap.VNL?.tpTier || "N/A"} | ${dbMap.VNL?.proTier || "N/A"}`,
+			];
+
+			let mappers = [];
+			for (let i = 0; i < kzgoData.mapperNames.length; i++) {
+				mappers.push(`[${kzgoData.mapperNames[i]}](https://steamcommunity.com/profiles/${kzgoData.mapperIds[i]})`);
+			}
+
+			const embed = new MessageEmbed()
+				.setColor("#7480c2")
+				.setTitle(map)
+				.setURL(`https://kzgo.eu/maps/${map}`)
+				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+				.setDescription(
+					`> API Tier: ${apiTier} (${displayTier})\n> Community Tiers:\n> SKZ: ${skzTier}\n> KZT: ${kztTier}\n> VNL: ${vnlTier}\n> Mapper(s): ${mappers.join(
+						", "
+					)}\n> Bonuses: ${kzgoData.bonuses}\n> Globalled: <t:${createdAt / 1000}:d>\n\nFilters:`
+				)
+				.addFields(
+					{
+						name: "SimpleKZ",
+						value: filterSKZ,
+						inline: true,
+					},
+					{
+						name: "KZTimer",
+						value: filterKZT,
+						inline: true,
+					},
+					{
+						name: "Vanilla",
+						value: filterVNL,
+						inline: true,
+					}
+				)
+				.setFooter({
+					text: `(͡ ͡° ͜ つ ͡͡°)7 | workshopID: ${kzgoData.workshopId} | schnose.eu/church`,
+					iconURL: icon,
+				});
+
+			return answer({ embeds: [embed] });
+		});
 	},
 };
