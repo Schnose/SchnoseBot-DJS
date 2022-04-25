@@ -104,9 +104,9 @@ module.exports = {
 
 			const dbMap = data.mapList[map].main;
 			[skzTier, kztTier, vnlTier] = [
-				`${dbMap.SKZ?.tpTier || "N/A"} | ${dbMap.SKZ?.proTier || "N/A"}`,
-				`${dbMap.KZT?.tpTier || "N/A"} | ${dbMap.KZT?.proTier || "N/A"}`,
-				`${dbMap.VNL?.tpTier || "N/A"} | ${dbMap.VNL?.proTier || "N/A"}`,
+				`${dbMap.SKZ?.tpTier || "X"} | ${dbMap.SKZ?.proTier || "X"}`,
+				`${dbMap.KZT?.tpTier || "X"} | ${dbMap.KZT?.proTier || "X"}`,
+				`${dbMap.VNL?.tpTier || "X"} | ${dbMap.VNL?.proTier || "X"}`,
 			];
 
 			let mappers = [];
