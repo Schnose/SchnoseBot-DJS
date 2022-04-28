@@ -109,6 +109,18 @@ module.exports = {
 				`${dbMap.VNL?.tpTier || "X"} | ${dbMap.VNL?.proTier || "X"}`,
 			];
 
+			let jsArea;
+			switch (data.mapList[map].jsArea) {
+				case "true":
+					jsArea = "Yes";
+					break;
+				case "false":
+					jsArea = "No";
+					break;
+				case "maybe":
+					jsArea = "Maybe";
+			}
+
 			let mappers = [];
 			for (let i = 0; i < kzgoData.mapperNames.length; i++) {
 				mappers.push(`[${kzgoData.mapperNames[i]}](https://steamcommunity.com/profiles/${kzgoData.mapperIds[i]})`);
@@ -122,7 +134,7 @@ module.exports = {
 				.setDescription(
 					`> API Tier: ${apiTier} (${displayTier})\n> [Community Tiers](https://tiers.schnose.eu) (TP | PRO):\n> SKZ: ${skzTier}\n> KZT: ${kztTier}\n> VNL: ${vnlTier}\n> Mapper(s): ${mappers.join(
 						", "
-					)}\n> Bonuses: ${kzgoData.bonuses}\n> Globalled: <t:${createdAt / 1000}:d>\n\nFilters:`
+					)}\n> Bonuses: ${kzgoData.bonuses}\n> LJ Room? ${jsArea}\n> Globalled: <t:${createdAt / 1000}:d>\n\nFilters:`
 				)
 				.addFields(
 					{
