@@ -91,6 +91,11 @@ module.exports = {
 					value: `profile-value`,
 				},
 				{
+					label: `/random`,
+					description: `Get a random KZ map. You can sort by filters if you want :)`,
+					value: `random-value`,
+				},
+				{
 					label: `/recent`,
 					description: `Get a player's most recent Personal Best`,
 					value: `recent-value`,

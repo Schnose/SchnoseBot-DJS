@@ -147,6 +147,10 @@ async function cmdHandler(client) {
 						embedDescription = `This command will give you an overview of your (or another player's) map completion, current points, WR count and mode preference.`;
 						break;
 
+					case "random-value":
+						embedTitle = `/random`;
+						embedDescription = `This command will give you a random KZ map to play. You can sort by tiers as well, if you want to.`;
+						break;
 					case "recent-value":
 						embedTitle = `/recent`;
 						embedDescription = `This command will show you your (or another player's) most recent PB.`;
