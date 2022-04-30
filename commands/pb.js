@@ -23,8 +23,9 @@ module.exports = {
 		),
 
 	async execute(interaction) {
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 
 		userSchema.findOne(async (err, data) => {
@@ -56,19 +57,25 @@ module.exports = {
 			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
 			// Target specified with Name or steamID
 			else {
+				console.log("1");
 				// Try #1: steamID
-				let result = globalFunctions.getSteamID(target);
+				let result = await globalFunctions.getSteamID(target);
+				console.log("2");
 				if (result === "bad") return answer({ content: "API Error. Please try again later." });
 
 				// Try #2: Name
 				if (!result) {
-					result = globalFunctions.getName(target);
+					console.log("3");
+					result = await globalFunctions.getName(target);
+					console.log("4");
 					if (result === "bad") return answer({ content: "API Error. Please try again later." });
 				}
 
 				// Player doesn't exist
 				if (!result) return answer({ content: "That player has never played KZ before!" });
+				console.log("5");
 				steamID = result;
+				console.log(steamID);
 			}
 
 			// No Target specified and also no DB entries
@@ -196,12 +203,12 @@ module.exports = {
 			let tpTime = globalFunctions.convertmin(TP.time);
 			let tpName = TP.player_name;
 			let tpPlace;
-			if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(PRO);
+			if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(TP);
 
 			let proTime = globalFunctions.convertmin(PRO.time);
 			let proName = PRO.player_name;
 			let proPlace;
-			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(TP);
+			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(PRO);
 			if (tpPlace === "bad") tpPlace = "";
 			if (proPlace === "bad") proPlace = "";
 

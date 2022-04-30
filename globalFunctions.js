@@ -350,6 +350,7 @@ const globalFunctions = {
 
 	// Takes in a time and returns the #place of that time
 	getPlace: async function (time) {
+		let place;
 		await axios
 			.get(`https://kztimerglobal.com/api/v2.0/records/place/${time.id}`)
 			.then((response) => {
