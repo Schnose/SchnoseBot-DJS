@@ -64,12 +64,12 @@ module.exports = {
 			// Target specified with Name or steamID
 			else {
 				// Try #1: steamID
-				let result = globalFunctions.getSteamID(target);
+				let result = await globalFunctions.getSteamID(target);
 				if (result === "bad") return answer({ content: "API Error. Please try again later." });
 
 				// Try #2: Name
 				if (!result) {
-					result = globalFunctions.getName(target);
+					result = await globalFunctions.getName(target);
 					if (result === "bad") return answer({ content: "API Error. Please try again later." });
 				}
 
