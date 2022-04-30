@@ -29,7 +29,7 @@ DATABASE_TOKEN=<mongodb link>
 
 3. Set a mode in the `config.json`
 
-```json
+```js
 // will only register commands on 1 server
 "testServer": "some guildID"
 "mode": "DEV"
