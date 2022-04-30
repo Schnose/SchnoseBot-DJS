@@ -3,41 +3,56 @@
 ## GOKZ Commands in Discord
 
 If you have any bugs to report or suggestions to make I would appreaciate it!
-Feel free to message me on Discord: `AlphaKeks#7480`
-I'm always happy about constructive criticism; toxicity is unnecessary and will be ignored :)
+Feel free to message me on Discord: `AlphaKeks#9826`
+I'm always happy about constructive criticism :)
 
-This Bot is a personal project of mine and I don't intend to get this on as many servers as possible. I published it to get feedback and provide people with the features of this bot as I haven't seen a similar one on any KZ Discord I am on. If you have a different bot you like more, that's fine by me!
+---
 
+## QUICKSTART
 
-## INFO
+---
 
-### Commands
-#### If you want more info on each command, please visit the [wiki](https://github.com/AlphaKeks/Schnose/wiki)
+### Setup
 
--   /setsteam
--   /mode
--   /invite
--   /pb
--   /wr
--   /maptop
--   /bpb
--   /bwr
--   /bmaptop
--   /recent
--   /top
--   /profile
--   /unfinished
--   /hasfilter
--   /nocrouch
+1. Clone the repository with the following command:
 
-## How to get started
+```bash
+$ git clone https://github.com/Schnose/SchnoseBot-DJS.git
+```
 
-You start by inviting the bot through [this link](https://schnose.eu/schnosebot).
+2. Now create a `.env` file in the root directory of the repo and insert the following lines:
 
-1. Set your SteamID by using `/setsteam`.
-2. Set your preferred gamemode via `/mode`.
-3. Use `/help` to get an overview over the commands.
+```
+BOT_TOKEN=<your discord bot token>
+DATABASE_TOKEN=<mongodb link>
+```
+
+> You can get your bot's token on [this](https://discord.com/developers/applications) website.
+
+3. Set a mode in the `config.json`
+
+```json
+// will only register commands on 1 server
+"testServer": "some guildID"
+"mode": "DEV"
+
+// will register commands globally
+"mode": "PROD"
+```
+
+You want to set the mode to "DEV" when testing, registering commands globally can take up to an hour.
+
+### How to use it
+
+1. Invite the Bot to your Server with [this link](https://schnose.eu/bot).
+2. Set your steamID with `/setsteam <steamID>`
+3. Set your preferred gamemode with `/mode <mode>`
+4. Use `/help` to get detailed information on all the commands.
+
+If you want previews check out the [Wiki](https://github.com/Schnose/SchnoseBot-DJS/wiki).
+
+---
 
 ## Credits
 
-Shoutout to https://kzgo.eu/ for making our life much easier with the scuffed GlobalAPI. Check out the website, it's much more detailed than this bot and has a lot more functionality!
+Shoutout to https://kzgo.eu/ for making our life much easier thanks to their custom API. Check out the website, it's much more detailed than this bot and has a lot more functionality!
