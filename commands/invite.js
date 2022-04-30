@@ -7,10 +7,13 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
-		let reply = "https://schnose.eu/bot";
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
+
+		let reply = "https://schnose.eu/bot";
+
 		answer({ content: reply });
 	},
 };

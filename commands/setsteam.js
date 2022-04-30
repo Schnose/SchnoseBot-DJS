@@ -11,13 +11,13 @@ module.exports = {
 		.addStringOption((o) => o.setName("steamid").setDescription("e.g. STEAM_1:1:161178172").setRequired(true)),
 
 	async execute(interaction) {
-		let reply = "";
+		await interaction.deferReply();
+		async function answer(input) {
+			await interaction.editReply(input);
+		}
+
 		let steamid = interaction.options.getString("steamid");
 		console.log(`New steamID: ${steamid}`);
-
-		async function answer(input) {
-			await interaction.reply(input);
-		}
 
 		try {
 			const result = await axios.get(

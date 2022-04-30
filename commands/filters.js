@@ -13,8 +13,9 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 
 		userSchema.findOne(async (err, data) => {

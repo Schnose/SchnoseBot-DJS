@@ -11,11 +11,12 @@ module.exports = {
 		.addNumberOption((o) => o.setName("max").setDescription("The max speed of your nocrouch jump").setRequired(true)),
 
 	async execute(interaction) {
-		let reply = "";
+		await interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 
+		let reply = "";
 		let approx = interaction.options.getNumber("distance") + (interaction.options.getNumber("max") / 128) * 4;
 		reply = `Approximated Distance: \`${approx.toFixed(4)}\``;
 

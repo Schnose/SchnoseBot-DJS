@@ -19,12 +19,14 @@ module.exports = {
 		),
 
 	async execute(interaction) {
+		await interaction.deferReply();
+		async function answer(input) {
+			await interaction.editReply(input);
+		}
+
 		let mode = interaction.options.getString("mode");
 		let dbMode;
 		let displayMode;
-		async function answer(input) {
-			await interaction.reply(input);
-		}
 
 		try {
 			userSchema.findOne(async (err, data) => {

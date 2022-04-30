@@ -12,8 +12,9 @@ module.exports = {
 		.addStringOption((o) => o.setName("target").setDescription("Select a Player.").setRequired(false)),
 
 	async execute(interaction) {
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 
 		userSchema.findOne(async (err, data) => {

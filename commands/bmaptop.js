@@ -27,8 +27,9 @@ module.exports = {
 		),
 
 	async execute(interaction) {
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 		userSchema.findOne(async (err, data) => {
 			if (err)

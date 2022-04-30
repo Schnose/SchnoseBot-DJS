@@ -12,12 +12,12 @@ module.exports = {
 		.addStringOption((o) => o.setName("map").setDescription("Enter a global map.").setRequired(true)),
 
 	async execute(interaction) {
-		let map = interaction.options.getString("map").toLowerCase();
 		await interaction.deferReply();
-
 		async function answer(input) {
 			await interaction.editReply(input);
 		}
+
+		let map = interaction.options.getString("map").toLowerCase();
 
 		/* Validate Map */
 		const globalMaps = await globalFunctions.getMapsAPI();

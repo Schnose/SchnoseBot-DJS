@@ -26,9 +26,11 @@ module.exports = {
 		),
 
 	async execute(interaction) {
+		await interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
+
 		userSchema.findOne(async (err, data) => {
 			if (err)
 				return console.error(err), answer({ content: "Database Error. Please contact `AlphaKeks#9826` about this." });

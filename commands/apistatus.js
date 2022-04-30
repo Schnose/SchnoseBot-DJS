@@ -8,8 +8,9 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
+		interaction.deferReply();
 		async function answer(input) {
-			await interaction.reply(input);
+			await interaction.editReply(input);
 		}
 
 		const status = await globalFunctions.checkAPI();

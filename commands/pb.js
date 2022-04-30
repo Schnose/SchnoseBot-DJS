@@ -57,25 +57,19 @@ module.exports = {
 			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
 			// Target specified with Name or steamID
 			else {
-				console.log("1");
 				// Try #1: steamID
 				let result = await globalFunctions.getSteamID(target);
-				console.log("2");
 				if (result === "bad") return answer({ content: "API Error. Please try again later." });
 
 				// Try #2: Name
 				if (!result) {
-					console.log("3");
 					result = await globalFunctions.getName(target);
-					console.log("4");
 					if (result === "bad") return answer({ content: "API Error. Please try again later." });
 				}
 
 				// Player doesn't exist
 				if (!result) return answer({ content: "That player has never played KZ before!" });
-				console.log("5");
 				steamID = result;
-				console.log(steamID);
 			}
 
 			// No Target specified and also no DB entries
