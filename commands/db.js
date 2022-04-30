@@ -11,9 +11,8 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
-		interaction.deferReply();
 		async function answer(input) {
-			await interaction.editReply(input);
+			await interaction.reply(input);
 		}
 
 		userSchema.findOne(async (err, data) => {
@@ -27,8 +26,11 @@ module.exports = {
 
 			let [USERID, STEAMID, MODE] = "";
 			if (data.List[interaction.user.id].userId) USERID = data.List[interaction.user.id].userId;
-			if (data.List[interaction.user.id].userId) STEAMID = data.List[interaction.user.id].steamId;
-			if (data.List[interaction.user.id].userId) MODE = data.List[interaction.user.id].mode;
+			else USERID = "?";
+			if (data.List[interaction.user.id].steamId) STEAMID = data.List[interaction.user.id].steamId;
+			else STEAMID = "?";
+			if (data.List[interaction.user.id].mode) MODE = data.List[interaction.user.id].mode;
+			else MODE = "?";
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
