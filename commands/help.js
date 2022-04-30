@@ -27,6 +27,11 @@ module.exports = {
 		const commandMenu = new MessageActionRow().addComponents(
 			new MessageSelectMenu().setCustomId("commands-menu").setPlaceholder("Please select a category.").addOptions(
 				{
+					label: `/apistatus`,
+					description: `Check the GlobalAPI Status`,
+					value: "apistatus-value",
+				},
+				{
 					label: `/bmaptop`,
 					description: `Check a bonus Top 100`,
 					value: "bmaptop-value",

@@ -82,6 +82,11 @@ async function cmdHandler(client) {
 
 				// interaction.values is an array, but always only has 1 element (for now)
 				switch (interaction.values[0]) {
+					case "apistatus-value":
+						embedTitle = `/apistatus`;
+						embedDescription = `This command will tell you whether the GlobalAPI is up or not.`;
+						break;
+
 					case "bmaptop-value":
 						embedTitle = `/bmaptop`;
 						embedDescription = `This command will give you a list of the top 100 times set on a bonus course.\nYou can specify the following parameters:\n> map*\n> course\n> runtype\n> mode\n\n*required`;
