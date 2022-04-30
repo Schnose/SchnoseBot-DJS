@@ -10,8 +10,6 @@ I'm always happy about constructive criticism :)
 
 ## QUICKSTART
 
----
-
 ### Setup
 
 1. Clone the repository with the following command:
