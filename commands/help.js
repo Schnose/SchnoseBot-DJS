@@ -11,9 +11,8 @@ module.exports = {
 		.setDefaultPermission(true),
 
 	async execute(interaction) {
-		interaction.deferReply();
 		async function answer(input) {
-			await interaction.editReply(input);
+			await interaction.reply(input);
 		}
 
 		const embed = new MessageEmbed()
