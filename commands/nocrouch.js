@@ -11,9 +11,8 @@ module.exports = {
 		.addNumberOption((o) => o.setName("max").setDescription("The max speed of your nocrouch jump").setRequired(true)),
 
 	async execute(interaction) {
-		await interaction.deferReply();
 		async function answer(input) {
-			await interaction.editReply(input);
+			await interaction.reply(input);
 		}
 
 		let reply = "";

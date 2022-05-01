@@ -19,9 +19,8 @@ module.exports = {
 		),
 
 	async execute(interaction) {
-		await interaction.deferReply();
 		async function answer(input) {
-			await interaction.editReply(input);
+			await interaction.reply(input);
 		}
 
 		let mode = interaction.options.getString("mode");
