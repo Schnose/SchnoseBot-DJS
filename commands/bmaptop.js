@@ -43,21 +43,14 @@ module.exports = {
 			let mode;
 
 			/* Validate Map */
-			const globalMaps = await globalFunctions.getMapcycle();
-			if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-			for (let i = 0; i < globalMaps.length; i++) {
-				if (globalMaps[i].includes(map)) {
-					map = globalMaps[i];
-					break;
-				}
-				if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
-			}
+			map = await globalFunctions.validateMap(map);
+			if (!map) return answer({ content: "Please enter a valid map." });
 
 			/* Validate Course */
-			const result = await globalFunctions.kzgoMaps();
+			const result = await globalFunctions.getMapsKZGO();
 			let n;
 			result.forEach((i) => {
-				if (i.name === map) return (n = i.bonuses);
+				if (i.name === map.name) return (n = i.bonuses);
 			});
 
 			if (course > n) return answer({ content: "Please specify a valid course." });
@@ -107,17 +100,17 @@ module.exports = {
 			if (runtype) displayRuntype = "TP";
 
 			/* Maptop */
-			let [Maptop] = await Promise.all([globalFunctions.getDataMaptop(runtype, mode, map, course)]);
+			const maptop = await globalFunctions.getMaptop(map.name, mode, course, runtype);
 
-			if (Maptop === "bad") return answer({ content: "API Error. Please try again later." });
-			if (Maptop === "no data") return answer({ content: "This Map seems to have 0 completions." });
+			if (maptop === undefined) return answer({ content: "API Error. Please try again later." });
+			if (maptop === null) return answer({ content: "This map has 0 completions." });
 
 			const Leaderboard = [];
 
-			for (let i = 0; i < Maptop.length; i++) {
+			for (let i = 0; i < maptop.length; i++) {
 				Leaderboard.push({
-					name: `[#${i + 1}] ${Maptop[i].player_name}`,
-					value: `${globalFunctions.convertmin(Maptop[i].time)}`,
+					name: `[#${i + 1}] ${maptop[i].player_name}`,
+					value: `${globalFunctions.convertmin(maptop[i].time)}`,
 					inline: true,
 				});
 			}
@@ -136,10 +129,10 @@ module.exports = {
 
 				const embed = new MessageEmbed()
 					.setColor("#7480c2")
-					.setTitle(`${map} - Bonus Maptop ${course}`)
-					.setURL(`https://kzgo.eu/maps/${map}`)
+					.setTitle(`${map.name} - Bonus Maptop ${course}`)
+					.setURL(`https://kzgo.eu/maps/${map.name}`)
 					.setDescription(`Mode: ${displayMode} | Runtype: ${displayRuntype}`)
-					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 					.addFields(pageEntries)
 					.setFooter({
 						text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",

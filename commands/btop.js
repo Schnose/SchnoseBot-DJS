@@ -80,12 +80,12 @@ module.exports = {
 			}
 
 			/* Leaderboard */
-			const Top = await globalFunctions.getTopPlayers(
+			const Top = await globalFunctions.getTop(
 				mode,
 				[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
 				runtype
 			);
-			if (Top === "bad") return answer({ content: "API Error. Please try again later." });
+			if (Top === undefined) return answer({ content: "API Error. Please try again later." });
 
 			const Leaderboard = [];
 
@@ -111,7 +111,7 @@ module.exports = {
 
 				const embed = new MessageEmbed()
 					.setColor("#7480c2")
-					.setTitle(`Top WRs`)
+					.setTitle(`Top BWRs`)
 					.setURL(`https://kzgo.eu/leaderboards?${linkMode || "skz"}=`)
 					.setDescription(`Mode: ${displayMode} | Runtype: ${displayRuntype}`)
 					.addFields(pageEntries)

@@ -2,6 +2,8 @@ const axios = require("axios");
 const fs = require("fs");
 
 const globalFunctions = {
+	/* Utility */
+
 	// Registering Command Files
 	getFiles: function (dir, suffix) {
 		const files = fs.readdirSync(dir, {
@@ -84,374 +86,407 @@ const globalFunctions = {
 		await axios
 			.get("https://kztimerglobal.com/api/v2.0/modes")
 			.then((response) => (result = response.data))
-			.catch((e) => (result = "bad"));
-		return result;
-	},
-
-	// Get Player by steamID
-	getSteamID: async function (target) {
-		let result;
-		target = encodeURIComponent(target);
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/players/steamid/${target}`)
-			.then((response) => {
-				let data = response.data;
-				try {
-					result = data[0].steam_id;
-				} catch {
-					return null;
-				}
-			})
 			.catch((e) => {
 				console.error(e);
-				result = "bad";
+				result = undefined;
 			});
-
 		return result;
 	},
 
-	// Get Player by Name
-	getName: async function (target) {
-		let result;
-		target = encodeURIComponent(target);
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/players?name=${target}&limit=1`)
-			.then((response) => {
-				let data = response.data;
-				try {
-					result = data[0].steam_id;
-				} catch {
-					return null;
-				}
-			})
-			.catch((e) => {
-				console.error(e);
-				result = "bad";
-			});
-
-		return result;
+	// Check if a map is global
+	validateMap: async function (mapName) {
+		let valid, map;
+		const globalMaps = await globalFunctions.getMapsAPI();
+		globalMaps.forEach((m) => {
+			if (m.name.includes(mapName)) {
+				valid = true;
+				map = m;
+			}
+			return valid, map;
+		});
+		if (valid) return map;
+		else return null;
 	},
 
-	// Get Player by steamID
-	getPlayer: async function (target) {
-		let result;
-		target = encodeURIComponent(target);
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/players/steamid/${target}`)
-			.then((response) => {
-				let data = response.data;
-				try {
-					result = data[0];
-				} catch {
-					return null;
-				}
-			})
-			.catch((e) => {
-				console.error(e);
-				result = "bad";
-			});
-
-		return result;
+	// Check if a course is valid
+	validateCourse: async function (mapName, course) {
+		const maps = await globalFunctions.getMapsKZGO();
+		let n;
+		let valid;
+		maps.forEach((m) => {
+			if (m.name === mapName) return (n = m.bonuses), (valid = true);
+		});
+		if (course > n) return (valid = false);
+		return (valid = true);
 	},
 
-	// Get API entries for all global maps
+	// Check if a target is valid
+	validateTarget: async function (target) {
+		if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
+		else {
+			let result = await globalFunctions.getPlayerAPI_name(target);
+			if (result) return (target = result);
+			result = await globalFunctions.getPlayerAPI_steamID(target);
+			if (result) return (target = result);
+			else return (target = null);
+		}
+		return target;
+	},
+
+	// Get all maps from the API
 	getMapsAPI: async function () {
-		let data;
+		let globalMaps = [];
 		await axios
-			.get("https://kztimerglobal.com/api/v2.0/maps?&is_validated=true&limit=9999")
-			.then((response) => {
-				data = response.data;
-			})
-			.catch((e) => {
-				data = "bad";
-				console.error(e);
-			});
-		return data;
-	},
-
-	// Get global mapcycle as an array
-	getMapcycle: async function () {
-		let h;
-		await axios
-			.get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
-			.then((response) => {
-				const maps = response.data;
-				let mapList = [];
-				mapList = maps.split("\r\n");
-				h = mapList;
-			})
-			.catch((e) => {
-				h = "bad";
-				console.error(e);
-			});
-		return h;
-	},
-
-	// Check global filters for a map
-	checkFilters: async function (mapID, course) {
-		let h;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/record_filters?tickrates=128&limit=9999`, {
+			.get(`https://kztimerglobal.com/api/v2.0/maps?`, {
 				params: {
-					has_teleports: false,
+					limit: 9999,
+				},
+			})
+			.then((response) => (globalMaps = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				globalMaps = undefined;
+			});
+		return globalMaps;
+	},
+
+	// Get all maps from kzgo.eu
+	getMapsKZGO: async function () {
+		let maps = [];
+		await axios
+			.get(`https://kzgo.eu/api/maps/`)
+			.then((response) => (maps = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				maps = undefined;
+			});
+		return maps;
+	},
+
+	// Get API data on a map
+	getMapAPI: async function (inputMap) {
+		let map;
+		// mapName
+		if (isNaN(inputMap)) {
+			await axios
+				.get(`https://kztimerglobal.com/api/v2.0/maps/name/${encodeURIComponent(inputMap)}`)
+				.then((response) => (map = response.data || null))
+				.catch((e) => {
+					console.error(e);
+					map = undefined;
+				});
+			return map;
+		}
+		// mapID
+		// this does NOT work (api is stupid, idk)
+		else {
+			await axios
+				.get(`https://kztimerglobal.com/api/v2.0/maps/id/${encodeURIComponent(inputMap)}`)
+				.then((response) => (map = response.data || null))
+				.catch((e) => {
+					console.error(e);
+					map = undefined;
+				});
+			return map;
+		}
+	},
+
+	// Get all modes from the API
+	getModesAPI: async function () {
+		let modes = [];
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/modes`)
+			.then((response) => (modes = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				modes = undefined;
+			});
+		return modes;
+	},
+
+	// Get API data on a mode
+	getModeAPI: async function (inputMode) {
+		let mode;
+		// modeName
+		if (isNaN(inputMode)) {
+			await axios
+				.get(`https://kztimerglobal.com/api/v2.0/modes/name/${encodeURIComponent(inputMode)}`)
+				.then((response) => (mode = response.data || null))
+				.catch((e) => {
+					console.error(e);
+					mode = undefined;
+				});
+			return mode;
+		}
+		// modeID
+		else {
+			await axios
+				.get(`https://kztimerglobal.com/api/v2.0/modes/id/${encodeURIComponent(inputMode)}`)
+				.then((response) => (mode = response.data || null))
+				.catch((e) => {
+					console.error(e);
+					mode = undefined;
+				});
+			return mode;
+		}
+	},
+
+	// Get a player's points and finishes
+	// steamID64 should be a string here or js will cry like a bitch
+	getPlayerPointsAPI: async function (steamID64, modeID) {
+		let playerData;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/player_ranks?`, {
+				params: {
+					steamid64s: steamID64,
+					mode_ids: modeID,
+					tickrates: 128,
+				},
+			})
+			.then((response) => (playerData = response.data[0] || null))
+			.catch((e) => {
+				console.error(e);
+				playerData = undefined;
+			});
+		return playerData;
+	},
+
+	// Get API data on a player
+	getPlayerAPI_steamID: async function (steamID) {
+		let player;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/players/steamid/${encodeURIComponent(steamID)}`)
+			.then((response) => (player = response.data[0] || null))
+			.catch((e) => {
+				console.error(e);
+				player = undefined;
+			});
+		return player;
+	},
+
+	getPlayerAPI_name: async function (name) {
+		let player;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/players?name=${name}`)
+			.then((response) => (player = response.data[0].steam_id || null))
+			.catch((e) => {
+				console.error(e);
+				player = undefined;
+			});
+		return player;
+	},
+
+	// Get API filters for a map
+	getFiltersAPI: async function (mapID, course) {
+		let modes = [];
+		let filters = [];
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/record_filters?`, {
+				params: {
 					map_ids: mapID,
 					stages: course,
+					tickrates: 128,
+					has_teleports: false,
+					limit: 9999,
+				},
+			})
+			.then((response) => (modes = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				modes = undefined;
+			});
+		if (modes) {
+			modes.forEach((mode) => {
+				switch (mode.mode_id) {
+					case 200:
+						filters.push({ mode: "kz_timer", displayMode: "KZTimer", abbrMode: "KZT", modeID: 200 });
+						break;
+					case 201:
+						filters.push({ mode: "kz_simple", displayMode: "SimpleKZ", abbrMode: "SKZ", modeID: 201 });
+						break;
+					case 202:
+						filters.push({ mode: "kz_vanilla", displayMode: "Vanilla", abbrMode: "VNL", modeID: 202 });
+						break;
+					default:
+						filters = null;
+				}
+			});
+			return filters;
+		} else return null;
+	},
+
+	// Get a player's PB on a map
+	getPB: async function (steamID, mapName, course, mode, runtype) {
+		let PB;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
+				params: {
+					steam_id: steamID,
+					map_name: mapName,
+					tickrate: 128,
+					stage: course,
+					modes_list: mode,
+					has_teleports: runtype,
+				},
+			})
+			.then((response) => (PB = response.data[0] || null))
+			.catch((e) => {
+				console.error(e);
+				PB = undefined;
+			});
+		return PB;
+	},
+
+	// Get the WR on a map
+	getWR: async function (mapName, course, mode, runtype) {
+		let WR;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
+				params: {
+					map_name: mapName,
+					tickrate: 128,
+					stage: course,
+					modes_list: mode,
+					has_teleports: runtype,
+					limit: 1,
+				},
+			})
+			.then((response) => (WR = response.data[0] || null))
+			.catch((e) => {
+				console.error(e);
+				WR = undefined;
+			});
+		return WR;
+	},
+
+	// Get the Top 100 times on a map
+	getMaptop: async function (mapName, mode, course, runtype) {
+		let maptop = [];
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
+				params: {
+					map_name: mapName,
+					tickrate: 128,
+					stage: course,
+					modes_list: mode,
+					has_teleports: runtype,
+					limit: 100,
+				},
+			})
+			.then((response) => (maptop = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				maptop = undefined;
+			});
+		return maptop;
+	},
+
+	// Get all times of a player
+	getTimes: async function (steamID, mode, runtype) {
+		let times = [];
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
+				params: {
+					steam_id: steamID,
+					tickrate: 128,
+					stage: 0,
+					modes_list: mode,
+					has_teleports: runtype,
+					limit: 9999,
+				},
+			})
+			.then((response) => (times = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				times = undefined;
+			});
+		return times;
+	},
+
+	// Get a player's most recent PB
+	getRecent: async function (steamID) {
+		let recent;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
+				params: {
+					steam_id: steamID,
+					tickrate: 128,
+					stage: 0,
+					limit: 9999,
 				},
 			})
 			.then((response) => {
-				h = response.data;
+				let createdOn = [];
+				let recentMaps = [];
+				response.data.forEach((r) => {
+					createdOn.push(Date.parse(r.created_on));
+					recentMaps.push(r);
+				});
+				recent = recentMaps[createdOn.indexOf(Math.max(...createdOn))] || null;
 			})
 			.catch((e) => {
-				h = "bad";
 				console.error(e);
+				recent = undefined;
 			});
-		return h;
+		return recent;
 	},
 
-	// Get data of all maps on kzgo.eu
-	kzgoMaps: async function () {
-		let h;
+	// Get the #place of a run
+	getPlace: async function (run) {
+		let place;
 		await axios
-			.get("https://kzgo.eu/api/maps/")
+			.get(`https://kztimerglobal.com/api/v2.0/records/place/${encodeURIComponent(run.id)}`)
 			.then((response) => {
-				h = response.data;
+				if (response.data) place = response.data;
+				else place = null;
 			})
 			.catch((e) => {
-				console.log(e);
-				h = "bad";
+				console.error(e);
+				place = undefined;
 			});
-		return h;
+		if (place) place = `[#${place}]`;
+		return place;
 	},
 
-	// Get all maps that are doable in a certain mode
-	getDoableMaps: async function (runtype, mode) {
+	// Get the Top 100 Record holders
+	getTop: async function (mode, stages, runtype) {
+		let top;
 		switch (mode) {
 			case "kz_timer":
 				mode = 200;
 				break;
-
 			case "kz_simple":
 				mode = 201;
 				break;
-
 			case "kz_vanilla":
 				mode = 202;
 				break;
-
 			default:
-				return;
+				mode = null;
 		}
-
-		let h = [];
-		await axios
-			.get("https://kztimerglobal.com/api/v2.0/record_filters?stages=0&tickrates=128&limit=9999", {
-				params: {
-					mode_ids: mode,
-					has_teleports: runtype,
-				},
-			})
-			.then((response) => {
-				response.data.forEach((i) => {
-					h.push(i.map_id);
-				});
-			})
-			.catch((e) => {
-				h = "bad";
-				console.error(e);
-			});
-		return h;
-	},
-
-	// Get a user's PB on a map
-	getDataPB: async function (steamid, runtype, mode, map, stage) {
-		let h = 0;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
-				params: {
-					steam_id: steamid,
-					has_teleports: runtype,
-					modes_list: mode,
-					map_name: map,
-					stage: stage,
-				},
-			})
-			.then((response) => {
-				let data = response.data[0];
-				if (data) {
-					h = data;
-				} else {
-					h = { time: 0 };
-				}
-			})
-			.catch((e) => {
-				h = "bad";
-				console.error(e);
-			});
-
-		return h;
-	},
-
-	// Get the WR on a map
-	getDataWR: async function (runtype, mode, map, stage) {
-		let h;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
-				params: {
-					has_teleports: runtype,
-					modes_list: mode,
-					map_name: map,
-					stage: stage,
-					limit: 1,
-				},
-			})
-			.then((response) => {
-				let data = response.data;
-				if (!response.data[0]) {
-					h = {
-						time: 0,
-					};
-				} else h = data[0];
-			})
-			.catch(function (e) {
-				h = "bad";
-				console.error(e);
-			});
-		return h;
-	},
-
-	// Get a user's most recent PB
-	getDataRS: async function (steamid, runtype, mode) {
-		let h;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
-				params: {
-					has_teleports: runtype,
-					modes_list: mode,
-					steam_id: steamid,
-					tickrate: 128,
-					limit: 9999,
-					stage: 0,
-				},
-			})
-			.then((response) => {
-				let data = response.data;
-				if (!response.data[0]) {
-					h = {
-						created_on: 0,
-					};
-				} else h = data;
-			})
-			.catch((e) => {
-				h = "bad";
-				console.error(e);
-			});
-		return h;
-	},
-
-	// Takes in a time and returns the #place of that time
-	getPlace: async function (time) {
-		let place;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/place/${time.id}`)
-			.then((response) => {
-				data = response.data;
-				if (data) {
-					place = data;
-				} else {
-					place = null;
-				}
-			})
-			.catch((e) => {
-				console.error(e);
-				place = "bad";
-			});
-		if (place && place != "bad") place = "[#" + place + "]";
-		return place;
-	},
-
-	// Get the top 100 times on a map
-	getDataMaptop: async function (runtype, mode, map, stage) {
-		let h;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/top?`, {
-				params: {
-					has_teleports: runtype,
-					modes_list: mode,
-					map_name: map,
-					stage: stage,
-					limit: 100,
-				},
-			})
-			.then((response) => {
-				let data = response.data;
-				if (!response.data[0]) {
-					h = "no data";
-				} else h = data;
-			})
-			.catch((e) => {
-				console.error(e);
-				h = "bad";
-			});
-		return h;
-	},
-
-	// Get the Top 100 WR Holders
-	getTopPlayers: async function (mode, stages, runtype) {
-		if (mode == "kz_timer") {
-			mode = 200;
-		} else if (mode == "kz_simple") {
-			mode = 201;
-		} else if (mode == "kz_vanilla") {
-			mode = 202;
-		} else return;
-
-		let link = "https://kztimerglobal.com/api/v2.0/records/top/world_records?";
-		stages.forEach((i) => {
-			link += `stages=${i}&`;
-		});
-
-		let h;
+		let link = `https://kztimerglobal.com/api/v2.0/records/top/world_records?`;
+		stages.forEach((i) => (link += `stages=${i}&`));
 		await axios
 			.get(link, {
 				params: {
 					mode_ids: mode,
 					tickrates: 128,
-					limit: 100,
 					has_teleports: runtype,
+					limit: 100,
 				},
 			})
-			.then((response) => {
-				h = response.data;
-			})
+			.then((response) => (top = response.data || null))
 			.catch((e) => {
 				console.error(e);
-				h = "bad";
+				top = undefined;
 			});
-		return h;
+		return top;
 	},
 
-	// Get all times of a player
-	getTimes: async function (steamid, runtype, mode) {
-		let h;
-		await axios
-			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
-				params: {
-					has_teleports: runtype,
-					modes_list: mode,
-					steam_id: steamid,
-					tickrate: 128,
-					limit: 9999,
-					stage: 0,
-				},
-			})
-			.then((response) => {
-				h = response.data;
-			})
-			.catch((e) => {
-				console.error(e);
-				h = "bad";
-			});
-		return h;
+	// Get the replay of a run
+	getReplay: async function (run) {
+		const replay = `https://kztimerglobal.com/api/v2.0/records/replay/${run.replay_id}`;
+		return replay;
 	},
 };
 

@@ -41,53 +41,22 @@ module.exports = {
 			let steamID;
 
 			/* Validate Map */
-			const globalMaps = await globalFunctions.getMapcycle();
-			if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-			for (let i = 0; i < globalMaps.length; i++) {
-				if (globalMaps[i].includes(map)) {
-					map = globalMaps[i];
-					break;
-				}
-				if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
-			}
+			map = await globalFunctions.validateMap(map);
+			if (!map) return answer({ content: "Please enter a valid map." });
 
 			/* Validate Course */
-			const result = await globalFunctions.kzgoMaps();
-			let n;
-			result.forEach((i) => {
-				if (i.name === map) return (n = i.bonuses);
-			});
-
-			if (course > n) return answer({ content: "Please specify a valid course." });
+			const isCourseValid = await globalFunctions.validateCourse(map.name, course);
+			if (!isCourseValid) return answer({ content: "Please enter a valid course." });
 
 			/* Validate Target */
-
-			// Target unspecified, targetting user
-			if (target === null) target = interaction.user.id;
-			// Target specified with @mention
-			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
-			// Target specified with Name or steamID
-			else {
-				// Try #1: steamID
-				let result = await globalFunctions.getSteamID(target);
-				if (result === "bad") return answer({ content: "API Error. Please try again later." });
-
-				// Try #2: Name
-				if (!result) {
-					result = await globalFunctions.getName(target);
-					if (result === "bad") return answer({ content: "API Error. Please try again later." });
-				}
-
-				// Player doesn't exist
-				if (!result) return answer({ content: "That player has never played KZ before!" });
-				steamID = result;
-			}
+			if (!target) target = interaction.user.id;
+			else steamID = await globalFunctions.validateTarget(target);
 
 			// No Target specified and also no DB entries
 			if (!steamID) {
 				if (!data.List[target])
 					return answer({
-						contenet: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
+						content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
 			}
@@ -137,15 +106,15 @@ module.exports = {
 				// Mode unspecified
 				case "All 3 Modes":
 					let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
-						globalFunctions.getDataPB(steamID, true, "kz_simple", map, course),
-						globalFunctions.getDataPB(steamID, false, "kz_simple", map, course),
-						globalFunctions.getDataPB(steamID, true, "kz_timer", map, course),
-						globalFunctions.getDataPB(steamID, false, "kz_timer", map, course),
-						globalFunctions.getDataPB(steamID, true, "kz_vanilla", map, course),
-						globalFunctions.getDataPB(steamID, false, "kz_vanilla", map, course),
+						globalFunctions.getPB(steamID, map.name, course, "kz_simple", true),
+						globalFunctions.getPB(steamID, map.name, course, "kz_simple", false),
+						globalFunctions.getPB(steamID, map.name, course, "kz_timer", true),
+						globalFunctions.getPB(steamID, map.name, course, "kz_timer", false),
+						globalFunctions.getPB(steamID, map.name, course, "kz_vanilla", true),
+						globalFunctions.getPB(steamID, map.name, course, "kz_vanilla", false),
 					]);
 
-					if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes("bad"))
+					if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(null))
 						return answer({ content: "API Error. Please try again later." });
 
 					if (
@@ -156,7 +125,7 @@ module.exports = {
 						vnlTP.time == 0 &&
 						vnlPRO.time == 0
 					)
-						return answer({ content: `No PB found for \`${map}\`.` });
+						return answer({ content: `No PB found for \`${map.name}\`.` });
 
 					function name(mode) {
 						return mode.player_name;
@@ -167,9 +136,9 @@ module.exports = {
 
 					let embed = new MessageEmbed()
 						.setColor("#7480c2")
-						.setTitle(`${map} - BPB ${course}`)
-						.setURL(`https://kzgo.eu/maps/${map}`)
-						.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+						.setTitle(`${map.name} - BPB ${course}`)
+						.setURL(`https://kzgo.eu/maps/${map.name}`)
+						.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 						.addFields(
 							{
 								name: "SimpleKZ",
@@ -198,32 +167,34 @@ module.exports = {
 
 			// Mode specified
 			let [TP, PRO] = await Promise.all([
-				globalFunctions.getDataPB(steamID, true, mode, map, course),
-				globalFunctions.getDataPB(steamID, false, mode, map, course),
+				globalFunctions.getPB(steamID, map.name, course, mode, true),
+				globalFunctions.getPB(steamID, map.name, course, mode, false),
 			]);
 
-			if ([TP, PRO].includes("bad")) return answer({ content: "API Error. Please try again later." });
-			if (TP.time == 0 && PRO.time == 0) return answer({ content: `No PB found for \`${map}\`` });
+			if (TP === undefined || PRO === undefined) return answer({ content: "API Error. Please try again later." });
 
-			let tpTime = globalFunctions.convertmin(TP.time);
-			let tpName = TP.player_name;
-			let tpPlace;
-			if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(TP);
+			let tpTime, tpName, tpPlace, proTime, proName, proPlace;
 
-			let proTime = globalFunctions.convertmin(PRO.time);
-			let proName = PRO.player_name;
-			let proPlace;
-			if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(PRO);
+			if (TP) {
+				tpTime = globalFunctions.convertmin(TP.time);
+				tpName = TP.player_name;
+				tpPlace;
+				if (TP.time !== 0) tpPlace = await globalFunctions.getPlace(TP);
+			}
 
-			if (tpPlace === "bad") tpPlace = "";
-			if (proPlace === "bad") proPlace = "";
+			if (PRO) {
+				proTime = globalFunctions.convertmin(PRO.time);
+				proName = PRO.player_name;
+				proPlace;
+				if (PRO.time !== 0) proPlace = await globalFunctions.getPlace(PRO);
+			}
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
-				.setTitle(`${map} - BPB ${course}`)
-				.setURL(`https://kzgo.eu/maps/${map}`)
+				.setTitle(`${map.name} - BPB ${course}`)
+				.setURL(`https://kzgo.eu/maps/${map.name}`)
 				.setDescription(`Mode: ${displayMode}`)
-				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 				.addFields(
 					{
 						name: "TP",

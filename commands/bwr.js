@@ -10,6 +10,9 @@ module.exports = {
 		.setDescription("Check a Bonus World Record on a map.")
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName("map").setDescription("Select a Map.").setRequired(true))
+		.addIntegerOption((o) =>
+			o.setName("course").setDescription("Specify which BWR you want to check.").setRequired(false)
+		)
 		.addStringOption((o) =>
 			o
 				.setName("mode")
@@ -19,11 +22,7 @@ module.exports = {
 				.addChoice("KZT", "KZTimer")
 				.addChoice("VNL", "Vanilla")
 				.addChoice("ALL", "All 3 Modes")
-		)
-		.addIntegerOption((o) =>
-			o.setName("course").setDescription("Specify which BWR you want to check.").setRequired(false)
 		),
-
 	async execute(interaction) {
 		await interaction.deferReply();
 		async function answer(input) {
@@ -36,21 +35,14 @@ module.exports = {
 		let course = interaction.options.getInteger("course") || 1;
 
 		/* Validate Map */
-		const globalMaps = await globalFunctions.getMapcycle();
-		if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-		for (let i = 0; i < globalMaps.length; i++) {
-			if (globalMaps[i].includes(map)) {
-				map = globalMaps[i];
-				break;
-			}
-			if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
-		}
+		map = await globalFunctions.validateMap(map);
+		if (!map) return answer({ content: "Please enter a valid map." });
 
 		/* Validate Course */
-		const result = await globalFunctions.kzgoMaps();
+		const result = await globalFunctions.getMapsKZGO();
 		let n;
 		result.forEach((i) => {
-			if (i.name === map) return (n = i.bonuses);
+			if (i.name === map.name) return (n = i.bonuses);
 		});
 
 		if (course > n) return answer({ content: "Please specify a valid course." });
@@ -73,15 +65,15 @@ module.exports = {
 			// Mode unspecified
 			case "All 3 Modes":
 				let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
-					globalFunctions.getDataWR(true, "kz_simple", map, course),
-					globalFunctions.getDataWR(false, "kz_simple", map, course),
-					globalFunctions.getDataWR(true, "kz_timer", map, course),
-					globalFunctions.getDataWR(false, "kz_timer", map, course),
-					globalFunctions.getDataWR(true, "kz_vanilla", map, course),
-					globalFunctions.getDataWR(false, "kz_vanilla", map, course),
+					globalFunctions.getWR(map.name, course, "kz_simple", true),
+					globalFunctions.getWR(map.name, course, "kz_simple", false),
+					globalFunctions.getWR(map.name, course, "kz_timer", true),
+					globalFunctions.getWR(map.name, course, "kz_timer", false),
+					globalFunctions.getWR(map.name, course, "kz_vanilla", true),
+					globalFunctions.getWR(map.name, course, "kz_vanilla", false),
 				]);
 
-				if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes("bad"))
+				if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(undefined))
 					return answer({ content: "API Error. Please try again later." });
 
 				function name(mode) {
@@ -93,9 +85,9 @@ module.exports = {
 
 				let embed = new MessageEmbed()
 					.setColor("#7480c2")
-					.setTitle(`${map} - BWR ${course}`)
-					.setURL(`https://kzgo.eu/maps/${map}`)
-					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+					.setTitle(`${map.name} - BWR ${course}`)
+					.setURL(`https://kzgo.eu/maps/${map.name}`)
+					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 					.addFields(
 						{
 							name: "SimpleKZ",
@@ -127,30 +119,31 @@ module.exports = {
 
 		// Mode specified
 		let [TP, PRO] = await Promise.all([
-			globalFunctions.getDataWR(true, mode, map, course),
-			globalFunctions.getDataWR(false, mode, map, course),
+			globalFunctions.getWR(map.name, course, mode, true),
+			globalFunctions.getWR(map.name, course, mode, false),
 		]);
 
-		if ([TP, PRO].includes("bad")) return answer({ content: "API Error. Please try again later." });
+		if ([TP, PRO].includes(undefined)) return answer({ content: "API Error. Please try again later." });
 
-		let tpTime = globalFunctions.convertmin(TP.time);
-		let proTime = globalFunctions.convertmin(PRO.time);
+		let tpTime, proTime;
+		if (TP) tpTime = globalFunctions.convertmin(TP.time);
+		if (PRO) proTime = globalFunctions.convertmin(PRO.time);
 
 		let embed = new MessageEmbed()
 			.setColor("#7480c2")
-			.setTitle(`${map} - BWR ${course}`)
-			.setURL(`https://kzgo.eu/maps/${map}`)
+			.setTitle(`${map.name} - BWR ${course}`)
+			.setURL(`https://kzgo.eu/maps/${map.name}`)
 			.setDescription(`Mode: ${displayMode}`)
-			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 			.addFields(
 				{
 					name: "TP",
-					value: `${tpTime} (*${TP.player_name || "None"}*)`,
+					value: `${tpTime || "None"} (*${TP.player_name || "None"}*)`,
 					inline: true,
 				},
 				{
 					name: "PRO",
-					value: `${proTime} (*${PRO.player_name || "None"}*)`,
+					value: `${proTime || "None"} (*${PRO.player_name || "None"}*)`,
 					inline: true,
 				}
 			)
