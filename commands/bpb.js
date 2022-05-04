@@ -114,7 +114,7 @@ module.exports = {
 						globalFunctions.getPB(steamID, map.name, course, "kz_vanilla", false),
 					]);
 
-					if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(null))
+					if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(undefined))
 						return answer({ content: "API Error. Please try again later." });
 
 					if (
@@ -171,7 +171,7 @@ module.exports = {
 				globalFunctions.getPB(steamID, map.name, course, mode, false),
 			]);
 
-			if (TP === undefined || PRO === undefined) return answer({ content: "API Error. Please try again later." });
+			if ([TP, PRO].includes(undefined)) return answer({ content: "API Error. Please try again later." });
 
 			let tpTime, tpName, tpPlace, proTime, proName, proPlace;
 

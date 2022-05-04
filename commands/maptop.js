@@ -42,15 +42,8 @@ module.exports = {
 			let mode;
 
 			/* Validate Map */
-			const globalMaps = await globalFunctions.getMapcycle();
-			if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-			for (let i = 0; i < globalMaps.length; i++) {
-				if (globalMaps[i].includes(map)) {
-					map = globalMaps[i];
-					break;
-				}
-				if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
-			}
+			map = await globalFunctions.validateMap(map);
+			if (!map) return answer({ content: "Please enter a valid map." });
 
 			/* Validate Mode */
 
@@ -97,10 +90,10 @@ module.exports = {
 			if (runtype) displayRuntype = "TP";
 
 			/* Maptop */
-			let [Maptop] = await Promise.all([globalFunctions.getDataMaptop(runtype, mode, map, 0)]);
+			let Maptop = await globalFunctions.getMaptop(map.name, mode, 0, runtype);
 
-			if (Maptop === "bad") return answer({ content: "API Error. Please try again later." });
-			if (Maptop === "no data") return answer({ content: "This Map seems to have 0 completions." });
+			if (Maptop === undefined) return answer({ content: "API Error. Please try again later." });
+			if (Maptop === null) return answer({ content: "This map seems to have 0 completions." });
 
 			const Leaderboard = [];
 
@@ -126,10 +119,10 @@ module.exports = {
 
 				const embed = new MessageEmbed()
 					.setColor("#7480c2")
-					.setTitle(`${map} - Maptop`)
-					.setURL(`https://kzgo.eu/maps/${map}`)
+					.setTitle(`${map.name} - Maptop`)
+					.setURL(`https://kzgo.eu/maps/${map.name}`)
 					.setDescription(`Mode: ${displayMode} | Runtype: ${displayRuntype}`)
-					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+					.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 					.addFields(pageEntries)
 					.setFooter({
 						text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",

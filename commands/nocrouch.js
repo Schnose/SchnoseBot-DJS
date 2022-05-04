@@ -15,10 +15,8 @@ module.exports = {
 			await interaction.reply(input);
 		}
 
-		let reply = "";
 		let approx = interaction.options.getNumber("distance") + (interaction.options.getNumber("max") / 128) * 4;
-		reply = `Approximated Distance: \`${approx.toFixed(4)}\``;
 
-		answer({ content: reply });
+		answer({ content: `Approximated Distance: \`${approx.toFixed(4)}\`` });
 	},
 };

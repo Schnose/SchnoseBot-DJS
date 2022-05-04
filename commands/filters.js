@@ -18,80 +18,54 @@ module.exports = {
 			await interaction.editReply(input);
 		}
 
-		userSchema.findOne(async (err, data) => {
-			if (err) return console.error(err);
+		let map = interaction.options.getString("map").toLowerCase();
+		let course = interaction.options.getInteger("course") || 0;
 
-			let map = interaction.options.getString("map").toLowerCase();
-			let course = interaction.options.getInteger("course") || 0;
+		/* Validate Map */
+		map = await globalFunctions.validateMap(map);
+		if (!map) return answer({ content: "Please enter a valid map." });
 
-			/* Validate Map */
-			const globalMaps = await globalFunctions.getMapsAPI();
-			if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-			const mapsMap = new Map();
+		let [filterSKZ, filterKZT, filterVNL] = ["❌", "❌", "❌"];
 
-			for (let i = 0; i < globalMaps.length; i++) {
-				if (globalMaps[i].name.includes(map)) {
-					map = globalMaps[i].name;
-					mapsMap.set(globalMaps[i].name, globalMaps[i].id);
-					break;
+		const mapFilters = await globalFunctions.getFiltersAPI(map.id, course);
+
+		if (!mapFilters) return answer({ content: "API Error. Please try again later." });
+
+		mapFilters.forEach((filter) => {
+			if (filter.modeID === 200) filterKZT = "✅";
+			if (filter.modeID === 201) filterSKZ = "✅";
+			if (filter.modeID === 202) filterVNL = "✅";
+		});
+
+		const bonus = course > 0 ? ` B${course}` : "";
+
+		const embed = new MessageEmbed()
+			.setColor("#7480c2")
+			.setTitle(`${map.name}${bonus} - Filters`)
+			.setURL(`https://kzgo.eu/maps/${map.name}`)
+			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
+			.addFields(
+				{
+					name: "SimpleKZ",
+					value: `${filterSKZ}`,
+					inline: true,
+				},
+				{
+					name: "KZTimer",
+					value: `${filterKZT}`,
+					inline: true,
+				},
+				{
+					name: "Vanilla",
+					value: `${filterVNL}`,
+					inline: true,
 				}
-			}
-			if (!mapsMap.get(map)) return answer({ content: "Please enter a valid map." });
-
-			let [filterSKZ, filterKZT, filterVNL] = ["❌", "❌", "❌"];
-
-			let [mapFilter, kzgoData] = await Promise.all([
-				globalFunctions.checkFilters(mapsMap.get(map), 0),
-				globalFunctions.kzgoMaps(),
-			]);
-
-			if ([mapFilter, kzgoData].includes("bad")) return answer({ content: "API Error. Please try again later." });
-
-			let SKZ, KZT, VNL;
-
-			mapFilter.forEach((i) => {
-				if (i.mode_id === 200) KZT = true;
-				else if (i.mode_id === 201) SKZ = true;
-				else if (i.mode_id === 202) VNL = true;
+			)
+			.setFooter({
+				text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
+				iconURL: icon,
 			});
 
-			if (SKZ) filterSKZ = "✅";
-			if (KZT) filterKZT = "✅";
-			if (VNL) filterVNL = "✅";
-
-			let title;
-			if (course > 0) {
-				title = `${map} - Filters [B${course}]`;
-			} else title = `${map} - Filters`;
-
-			const embed = new MessageEmbed()
-				.setColor("#7480c2")
-				.setTitle(`${title}`)
-				.setURL(`https://kzgo.eu/maps/${map}`)
-				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
-				.addFields(
-					{
-						name: "SimpleKZ",
-						value: `${filterSKZ}`,
-						inline: true,
-					},
-					{
-						name: "KZTimer",
-						value: `${filterKZT}`,
-						inline: true,
-					},
-					{
-						name: "Vanilla",
-						value: `${filterVNL}`,
-						inline: true,
-					}
-				)
-				.setFooter({
-					text: `(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church`,
-					iconURL: icon,
-				});
-
-			return answer({ embeds: [embed] });
-		});
+		return answer({ embeds: [embed] });
 	},
 };

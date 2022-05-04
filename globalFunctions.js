@@ -233,14 +233,16 @@ const globalFunctions = {
 
 	// Get a player's points and finishes
 	// steamID64 should be a string here or js will cry like a bitch
-	getPlayerPointsAPI: async function (steamID64, modeID) {
+	getPlayerPointsAPI: async function (steamID64, modeID, runtype) {
 		let playerData;
 		await axios
 			.get(`https://kztimerglobal.com/api/v2.0/player_ranks?`, {
 				params: {
 					steamid64s: steamID64,
+					stages: 0,
 					mode_ids: modeID,
 					tickrates: 128,
+					has_teleports: runtype,
 				},
 			})
 			.then((response) => (playerData = response.data[0] || null))

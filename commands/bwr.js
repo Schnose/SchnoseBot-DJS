@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
 const globalFunctions = require("../globalFunctions");
 const { icon } = require("../config.json");
-const { kzgoMaps } = require("../globalFunctions");
 
 module.exports = {
 	data: new SlashCommandBuilder()
