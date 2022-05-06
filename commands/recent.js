@@ -21,75 +21,46 @@ module.exports = {
 			if (err) return console.error(err);
 
 			let target = interaction.options.getString("target") || null;
-			let steamID;
+			let steamID, runtype, mode;
 
 			/* Validate Target */
 
-			// Target unspecified, targetting user
-			if (target === null) target = interaction.user.id;
-			// Target specified with @mention
-			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
-			// Target specified with Name or steamID
-			else {
-				// Try #1: steamID
-				let result = await globalFunctions.getSteamID(target);
-				if (result === "bad") return answer({ content: "API Error. Please try again later." });
-
-				// Try #2: Name
-				if (!result) {
-					result = await globalFunctions.getName(target);
-					if (result === "bad") return answer({ content: "API Error. Please try again later." });
-				}
-
-				// Player doesn't exist
-				if (!result) return answer({ content: "That player has never played KZ before!" });
-				steamID = result;
-			}
+			if (!target) target = interaction.user.id;
+			else steamID = (await globalFunctions.validateTarget(target)).steam_id;
 
 			// No Target specified and also no DB entries
 			if (!steamID) {
 				if (!data.List[target])
 					return answer({
-						contenet: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
+						content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
 			}
 
 			let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
-				globalFunctions.getDataRS(steamID, true, "kz_simple"),
-				globalFunctions.getDataRS(steamID, false, "kz_simple"),
-				globalFunctions.getDataRS(steamID, true, "kz_timer"),
-				globalFunctions.getDataRS(steamID, false, "kz_timer"),
-				globalFunctions.getDataRS(steamID, true, "kz_vanilla"),
-				globalFunctions.getDataRS(steamID, false, "kz_vanilla"),
+				globalFunctions.getRecent(steamID, "kz_simple", true),
+				globalFunctions.getRecent(steamID, "kz_simple", false),
+				globalFunctions.getRecent(steamID, "kz_timer", true),
+				globalFunctions.getRecent(steamID, "kz_timer", false),
+				globalFunctions.getRecent(steamID, "kz_vanilla", true),
+				globalFunctions.getRecent(steamID, "kz_vanilla", false),
 			]);
-
 			let requests = [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO];
 
-			if (requests.includes("bad")) return answer({ content: "API Error. Please try again later." });
+			if (requests === undefined) return answer({ content: "API Error. Please try again later." });
+			if (requests === null) return answer({ content: "That player has no recent times." });
 
 			let createdOn = [];
-			let recentMaps = [];
-			requests.forEach((i) => {
-				if (i[0])
-					i.forEach((j) => {
-						createdOn.push(Date.parse(j.created_on)); // Magic, I'm too smart for this world
-						recentMaps.push(j);
-					});
-			});
+			requests.forEach((r) => createdOn.push(Date.parse(r.created_on)));
+			let recent = requests[createdOn.indexOf(Math.max(...createdOn))];
 
-			let recent = recentMaps[createdOn.indexOf(Math.max(...createdOn))]; // Magic, iBrahizy is too smart for me
-			if (!recent) return answer({ content: "That player has no recent times." });
-
-			let runtype;
 			if (recent.teleports === 0) runtype = "PRO";
 			else runtype = "TP";
 
 			let recentPlace = await globalFunctions.getPlace(recent);
-			if (recentPlace === "bad") recentPlace = "";
+			if (!recentPlace) recentPlace = "";
 			let recentTime = globalFunctions.convertmin(recent.time);
 
-			let mode;
 			if (recent.mode === "kz_simple") mode = "SKZ";
 			else if (recent.mode === "kz_timer") mode = "KZT";
 			else mode = "VNL";

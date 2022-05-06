@@ -45,7 +45,7 @@ module.exports = {
 			/* Validate Target */
 
 			if (!target) target = interaction.user.id;
-			else steamID = await globalFunctions.validateTarget(target);
+			else steamID = await globalFunctions.validateTarget(target).steam_id;
 
 			// No Target specified and also no DB entries
 			if (!steamID) {

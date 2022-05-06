@@ -31,33 +31,13 @@ module.exports = {
 			if (err) return console.error(err);
 
 			let target = interaction.options.getString("target") || null;
-			let steamID;
 			let displayMode = interaction.options.getString("mode") || null;
-			let mode;
-			let preferenceMode;
+			let mode, modeID, steamID;
 
 			/* Validate Target */
 
-			// Target unspecified, targetting user
-			if (target === null) target = interaction.user.id;
-			// Target specified with @mention
-			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
-			// Target specified with Name or steamID
-			else {
-				// Try #1: steamID
-				let result = await globalFunctions.getSteamID(target);
-				if (result === "bad") return answer({ content: "API Error. Please try again later." });
-
-				// Try #2: Name
-				if (!result) {
-					result = await globalFunctions.getName(target);
-					if (result === "bad") return answer({ content: "API Error. Please try again later." });
-				}
-
-				// Player doesn't exist
-				if (!result) return answer({ content: "That player has never played KZ before!" });
-				steamID = result;
-			}
+			if (!target) target = interaction.user.id;
+			else steamID = await globalFunctions.validateTarget(target).steam_id;
 
 			// No Target specified and also no DB entries
 			if (!steamID) {
@@ -67,6 +47,9 @@ module.exports = {
 					});
 				steamID = data.List[target].steamId;
 			}
+
+			let Player = await globalFunctions.getPlayerAPI_steamID(steamID);
+			Player.preferenceMode = "None";
 
 			/* Validate Mode */
 			switch (displayMode) {
@@ -81,14 +64,17 @@ module.exports = {
 					switch (mode) {
 						case "kz_simple":
 							displayMode = "SimpleKZ";
+							modeID = 201;
 							break;
 
 						case "kz_timer":
 							displayMode = "KZTimer";
+							modeID = 200;
 							break;
 
 						case "kz_vanilla":
 							displayMode = "Vanilla";
+							modeID = 202;
 							break;
 
 						case "all":
@@ -101,59 +87,71 @@ module.exports = {
 				// Mode specified
 				case "SimpleKZ":
 					mode = "kz_simple";
+					modeID = 201;
 					break;
 
 				case "KZTimer":
 					mode = "kz_timer";
+					modeID = 200;
 					break;
 
 				case "Vanilla":
 					mode = "kz_vanilla";
+					modeID = 202;
 					break;
 			}
 
 			// Check for mode preference
 			if (data.List[target]) {
 				if (data.List[target].mode) {
-					preferenceMode = data.List[target].mode;
-					switch (preferenceMode) {
+					Player.preferenceMode = data.List[target].mode;
+					switch (Player.preferenceMode) {
 						case "kz_simple":
-							preferenceMode = "SKZ";
+							Player.preferenceMode = "SKZ";
 							break;
 
 						case "kz_timer":
-							preferenceMode = "KZT";
+							Player.preferenceMode = "KZT";
 							break;
 
 						case "kz_vanilla":
-							preferenceMode = "VNL";
+							Player.preferenceMode = "VNL";
 							break;
 
 						case "all":
-							preferenceMode = "None";
+							Player.preferenceMode = "None";
 					}
-				} else preferenceMode = "None";
+				}
 			}
 
 			/* Profile Magic */
-			let [allTP, allPRO, allMaps, doableTP, doablePRO, player] = await Promise.all([
-				globalFunctions.getTimes(steamID, true, mode),
-				globalFunctions.getTimes(steamID, false, mode),
+			let [allTP, allPRO, allMaps, doableTP, doablePRO] = await Promise.all([
+				globalFunctions.getTimes(steamID, mode, true),
+				globalFunctions.getTimes(steamID, mode, false),
 				globalFunctions.getMapsAPI(),
-				globalFunctions.getDoableMaps(true, mode),
-				globalFunctions.getDoableMaps(false, mode),
-				globalFunctions.getPlayer(steamID),
+				globalFunctions.getFilterDistAPI(true, modeID),
+				globalFunctions.getFilterDistAPI(false, modeID),
 			]);
 
-			if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes("bad"))
+			if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes(undefined))
 				return answer({ content: "API Error. Please try again later." });
 
-			// TODO: clean this shit up holy fuck man so much repetition REEEEEE
+			// TODO: clean this up a bit
 			const mapTiers = new Map();
 			let mapsTP = [0, 0, 0, 0, 0, 0, 0, 0];
 			let strmapsTP = [0, 0, 0, 0, 0, 0, 0, 0];
 			let mapsPRO = [0, 0, 0, 0, 0, 0, 0, 0];
 			let strmapsPRO = [0, 0, 0, 0, 0, 0, 0, 0];
+
+			for (let i = 0; i < doableTP.length; i++) {
+				doableTP[i] = doableTP[i].map_id;
+			}
+
+			for (let i = 0; i < doablePRO.length; i++) {
+				doablePRO[i] = doablePRO[i].map_id;
+			}
+
+			console.log(doableTP);
 
 			allMaps.forEach((i) => {
 				mapTiers.set(i.name, i.difficulty);
@@ -347,8 +345,8 @@ module.exports = {
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
-				.setTitle(`${displayMode} Profile - ${player.name}`)
-				.setURL(`https://steamcommunity.com/profiles/${player.steamid64}`)
+				.setTitle(`${displayMode} Profile - ${Player.name}`)
+				.setURL(`https://steamcommunity.com/profiles/${Player.steamid64}`)
 				.setDescription(
 					`\`>> TP | 🏆 WRS: ${strTPWRs}\`⠀⠀⠀⠀⠀⠀⠀${line1gap}⠀⠀ ⠀⠀⠀\`>> PRO | 🏆 WRS: ${strPROWRs}\`
                     ─────────────────────────────────────────────────
@@ -394,7 +392,7 @@ module.exports = {
 					},
 					{
 						name: `Mode Preference`,
-						value: `${preferenceMode}`,
+						value: `${Player.preferenceMode}`,
 						inline: true,
 					}
 				)

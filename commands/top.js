@@ -80,8 +80,9 @@ module.exports = {
 			}
 
 			/* Leaderboard */
-			const Top = await globalFunctions.getTopPlayers(mode, [0], runtype);
-			if (Top === "bad") return answer({ content: "API Error. Please try again later." });
+
+			const Top = await globalFunctions.getTop(mode, [0], runtype);
+			if (Top === undefined) return answer({ content: "API Error. Please try again later." });
 
 			const Leaderboard = [];
 

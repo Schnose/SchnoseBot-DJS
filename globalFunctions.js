@@ -93,6 +93,27 @@ const globalFunctions = {
 		return result;
 	},
 
+	// Check the Tier of a map
+	checkTier: async function (mapName, mapList) {
+		const globalMaps = mapList;
+		globalMaps.forEach((m) => {
+			if (m.name === mapName) return m.difficulty;
+		});
+	},
+
+	// Get Tier distribution for VNL
+	vnlTiers: async function (tier) {
+		let num = tier;
+		await axios
+			.get(`https://kzgo.eu/api/maps/completion/kz_vanilla`)
+			.then((response) => (num = response[num] || null))
+			.catch((e) => {
+				console.error(e);
+				num = undefined;
+			});
+		return num;
+	},
+
 	// Check if a map is global
 	validateMap: async function (mapName) {
 		let valid, map;
@@ -191,6 +212,22 @@ const globalFunctions = {
 		}
 	},
 
+	// Get the global map cycle
+	getMapcycle: async function () {
+		let mapcycle = [];
+		await axios
+			.get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
+			.then((response) => {
+				const maps = response.data;
+				mapcycle = maps.split("\r\n") || null;
+			})
+			.catch((e) => {
+				console.error(e);
+				mapcycle = undefined;
+			});
+		return mapcycle;
+	},
+
 	// Get all modes from the API
 	getModesAPI: async function () {
 		let modes = [];
@@ -233,7 +270,7 @@ const globalFunctions = {
 
 	// Get a player's points and finishes
 	// steamID64 should be a string here or js will cry like a bitch
-	getPlayerPointsAPI: async function (steamID64, modeID, runtype) {
+	getPlayerPointsAPI: async function (steamID64, modeID) {
 		let playerData;
 		await axios
 			.get(`https://kztimerglobal.com/api/v2.0/player_ranks?`, {
@@ -242,7 +279,6 @@ const globalFunctions = {
 					stages: 0,
 					mode_ids: modeID,
 					tickrates: 128,
-					has_teleports: runtype,
 				},
 			})
 			.then((response) => (playerData = response.data[0] || null))
@@ -253,7 +289,7 @@ const globalFunctions = {
 		return playerData;
 	},
 
-	// Get API data on a player
+	// Get API data on a player by steamID
 	getPlayerAPI_steamID: async function (steamID) {
 		let player;
 		await axios
@@ -266,11 +302,12 @@ const globalFunctions = {
 		return player;
 	},
 
+	// Get API data on a player by name
 	getPlayerAPI_name: async function (name) {
 		let player;
 		await axios
 			.get(`https://kztimerglobal.com/api/v2.0/players?name=${name}`)
-			.then((response) => (player = response.data[0].steam_id || null))
+			.then((response) => (player = response.data[0] || null))
 			.catch((e) => {
 				console.error(e);
 				player = undefined;
@@ -315,6 +352,27 @@ const globalFunctions = {
 			});
 			return filters;
 		} else return null;
+	},
+
+	// Get API filter distributions
+	getFilterDistAPI: async function (runtype, modeID) {
+		let filters;
+		await axios
+			.get(`https://kztimerglobal.com/api/v2.0/record_filters?`, {
+				params: {
+					stages: 0,
+					mode_ids: modeID,
+					tickrates: 128,
+					has_teleports: runtype,
+					limit: 9999,
+				},
+			})
+			.then((response) => (filters = response.data || null))
+			.catch((e) => {
+				console.error(e);
+				filters = undefined;
+			});
+		return filters;
 	},
 
 	// Get a player's PB on a map
@@ -406,14 +464,15 @@ const globalFunctions = {
 	},
 
 	// Get a player's most recent PB
-	getRecent: async function (steamID) {
-		let recent;
+	getRecent: async function (steamID, mode, runtype) {
 		await axios
 			.get(`https://kztimerglobal.com/api/v2.0/records/top/?`, {
 				params: {
 					steam_id: steamID,
 					tickrate: 128,
 					stage: 0,
+					modes_list: mode,
+					has_teleports: runtype,
 					limit: 9999,
 				},
 			})
