@@ -1,15 +1,16 @@
-import { CommandInteraction as Interaction } from "discord.js";
+import { CommandInteraction as Interaction, MessageButton } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
+//@ts-ignore
+import paginationEmbed from "discordjs-button-pagination";
 import { answer, errDB, getMapsAPI, validateMap, validateMode } from "../../globalFunctions";
-import { specifiedMode } from "../modules/wr/specifiedMode";
-import { unspecifiedMode } from "../modules/wr/unspecifiedMode";
 import userSchema from "../../database/schemas/userSchema";
+import { fetchLeaderboard } from "../modules/maptop/fetchLeaderboard";
 require("dotenv").config();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("wr")
-		.setDescription("Check the World Record of a map.")
+		.setName("maptop")
+		.setDescription("Check a map's Top 100.")
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName("map").setDescription("Select a Map.").setRequired(true))
 		.addStringOption((o) =>
@@ -21,6 +22,13 @@ module.exports = {
 				.addChoices({ name: "SKZ", value: "SimpleKZ" })
 				.addChoices({ name: "VNL", value: "Vanilla" })
 				.addChoices({ name: "ALL", value: "All 3 Modes" })
+		)
+		.addStringOption((o) =>
+			o
+				.setName("runtype")
+				.setDescription("TP/PRO")
+				.addChoices({ name: "TP", value: "true" })
+				.addChoices({ name: "PRO", value: "false" })
 		),
 
 	async execute(interaction: Interaction) {
@@ -31,8 +39,9 @@ module.exports = {
 
 			let map: any = interaction.options.getString("map")!.toLowerCase();
 			let mode = interaction.options.getString("mode") || null;
+			let runtype = interaction.options.getString("runtype") === "true" ? true : false;
 			const globalMaps = await getMapsAPI(interaction);
-			let response: any = {};
+			let response = [{}];
 
 			/* Validate Map */
 			map = await validateMap(map, globalMaps);
@@ -42,11 +51,16 @@ module.exports = {
 			const modeVal = await validateMode(interaction, mode, data, interaction.user.id);
 
 			/* Execute API Requests */
-			if (modeVal.specified) response = await specifiedMode(interaction, map, 0, modeVal.mode);
-			else response = await unspecifiedMode(interaction, map, 0);
+			if (modeVal.specified) response = await fetchLeaderboard(interaction, map, modeVal.mode, 0, runtype);
+			else return answer(interaction, { content: "Please specify a mode or set a default one with `/mode`" });
 
 			/* Reply to the user */
-			answer(interaction, { embeds: [response] });
+			const [button1, button2] = [
+				new MessageButton().setCustomId("previousbtn").setLabel("<").setStyle("PRIMARY"),
+				new MessageButton().setCustomId("nextbtn").setLabel(">").setStyle("PRIMARY"),
+			];
+
+			paginationEmbed(interaction, response, [button1, button2], 1000 * 60 * 5);
 		});
 	},
 };

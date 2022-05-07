@@ -16,7 +16,8 @@
 		"removeComments": true,
 		"typeRoots": ["node_modules/@types"],
 		"sourceMap": false,
-		"baseUrl": "./"
+		"baseUrl": "./",
+		"allowJs": true
 	},
 	"files": ["src/bot.ts"],
 	"include": ["./**/**/*.ts", "./src/*.json"],

@@ -47,7 +47,7 @@ export async function specifiedMode(interaction: Interaction, map: any, course: 
 			}
 		)
 		.setFooter({
-			text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${TP.name || PRO.name} | schnose.eu/church`,
+			text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${TP.name || PRO.name || "None"} | schnose.eu/church`,
 			iconURL: process.env.ICON,
 		});
 	return embed;

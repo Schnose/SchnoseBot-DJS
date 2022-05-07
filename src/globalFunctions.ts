@@ -127,7 +127,7 @@ export const validateMap = async (mapName: string, mapList: any[]) => {
 		if (m.name.includes(mapName)) return (map = m);
 	});
 	if (map.name) return map;
-	else return {};
+	else return (map = {});
 };
 
 // Check whether a course is valid or not
