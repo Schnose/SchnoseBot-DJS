@@ -30,15 +30,10 @@ module.exports = {
 		let displayMode = interaction.options.getString("mode") || "All 3 Modes";
 		let mode;
 
-		const globalMaps = await globalFunctions.getMapcycle();
-		if (globalMaps === "bad") return answer({ content: "API Error. Please try again later." });
-		for (let i = 0; i < globalMaps.length; i++) {
-			if (globalMaps[i].includes(map)) {
-				map = globalMaps[i];
-				break;
-			}
-			if (!globalMaps[i]) return answer({ content: "Please enter a valid map." });
-		}
+		/* Validate Map */
+
+		map = await globalFunctions.validateMap(map);
+		if (!map) return answer({ content: "Please enter a valid map." });
 
 		// Check WR for specific modes
 		if (displayMode !== "All 3 Modes") {
@@ -56,20 +51,20 @@ module.exports = {
 			}
 
 			let [TP, PRO] = await Promise.all([
-				globalFunctions.getDataWR(true, mode, map, 0),
-				globalFunctions.getDataWR(false, mode, map, 0),
+				globalFunctions.getWR(map.name, 0, mode, true),
+				globalFunctions.getWR(map.name, 0, mode, false),
 			]);
 
-			if ([TP, PRO].includes("bad")) return answer({ content: "API Error. Please try again later." });
+			if ([TP, PRO].includes(undefined)) return answer({ content: "API Error. Please try again later." });
 			let tpTime = globalFunctions.convertmin(TP.time);
 			let proTime = globalFunctions.convertmin(PRO.time);
 
 			let embed = new MessageEmbed()
 				.setColor("#7480c2")
-				.setTitle(`${map} - WR`)
-				.setURL(`https://kzgo.eu/maps/${map}`)
+				.setTitle(`${map.name} - WR`)
+				.setURL(`https://kzgo.eu/maps/${map.name}`)
 				.setDescription(`Mode: ${displayMode}`)
-				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 				.addFields(
 					{
 						name: "TP",
@@ -93,15 +88,15 @@ module.exports = {
 		//Check WR for all modes
 		else {
 			let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
-				globalFunctions.getDataWR(true, "kz_simple", map, 0),
-				globalFunctions.getDataWR(false, "kz_simple", map, 0),
-				globalFunctions.getDataWR(true, "kz_timer", map, 0),
-				globalFunctions.getDataWR(false, "kz_timer", map, 0),
-				globalFunctions.getDataWR(true, "kz_vanilla", map, 0),
-				globalFunctions.getDataWR(false, "kz_vanilla", map, 0),
+				globalFunctions.getWR(map.name, 0, "kz_simple", true),
+				globalFunctions.getWR(map.name, 0, "kz_simple", false),
+				globalFunctions.getWR(map.name, 0, "kz_timer", true),
+				globalFunctions.getWR(map.name, 0, "kz_timer", false),
+				globalFunctions.getWR(map.name, 0, "kz_vanilla", true),
+				globalFunctions.getWR(map.name, 0, "kz_vanilla", false),
 			]);
 
-			if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes("bad"))
+			if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(undefined))
 				return answer({ content: "API Error. Please try again later." });
 
 			const [skzTPTime, skzPROTime, kztTPTime, kztPROTime, vnlTPTime, vnlPROTime] = [
@@ -115,9 +110,9 @@ module.exports = {
 
 			const embed = new MessageEmbed()
 				.setColor("#7480c2")
-				.setTitle(`${map} - WR`)
-				.setURL(`https://kzgo.eu/maps/${map}`)
-				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map}.jpg`)
+				.setTitle(`${map.name} - WR`)
+				.setURL(`https://kzgo.eu/maps/${map.name}`)
+				.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 				.addFields(
 					{
 						name: "SimpleKZ",

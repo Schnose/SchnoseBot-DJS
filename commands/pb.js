@@ -39,6 +39,7 @@ module.exports = {
 			let steamID;
 
 			/* Validate Map */
+
 			map = await globalFunctions.validateMap(map);
 			if (!map) return answer({ content: "Please enter a valid map." });
 

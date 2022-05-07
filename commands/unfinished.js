@@ -51,38 +51,19 @@ module.exports = {
 			let runtype = "true" === interaction.options.getString("runtype");
 			let displayRuntype = "PRO";
 			let target = interaction.options.getString("target") || null;
-			let mode;
 			let displayMode = interaction.options.getString("mode") || null;
-			let steamID;
+			let mode, modeID, steamID;
 
 			/* Validate Target */
 
-			// Target unspecified, targetting user
-			if (target === null) target = interaction.user.id;
-			// Target specified with @mention
-			else if (target.startsWith("<@") && target.endsWith(">")) target = globalFunctions.getIDFromMention(target);
-			// Target specified with Name or steamID
-			else {
-				// Try #1: steamID
-				let result = await globalFunctions.getSteamID(target);
-				if (result === "bad") return answer({ content: "API Error. Please try again later." });
-
-				// Try #2: Name
-				if (!result) {
-					result = await globalFunctions.getName(target);
-					if (result === "bad") return answer({ content: "API Error. Please try again later." });
-				}
-
-				// Player doesn't exist
-				if (!result) return answer({ content: "That player has never played KZ before!" });
-				steamID = result;
-			}
+			if (!target) target = interaction.user.id;
+			else steamID = await globalFunctions.validateTarget(target).steam_id;
 
 			// No Target specified and also no DB entries
 			if (!steamID) {
 				if (!data.List[target])
 					return answer({
-						contenet: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
+						content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
 			}
@@ -101,14 +82,17 @@ module.exports = {
 					switch (mode) {
 						case "kz_simple":
 							displayMode = "SimpleKZ";
+							modeID = 201;
 							break;
 
 						case "kz_timer":
 							displayMode = "KZTimer";
+							modeID = 200;
 							break;
 
 						case "kz_vanilla":
 							displayMode = "Vanilla";
+							modeID = 202;
 							break;
 
 						case "all":
@@ -119,14 +103,17 @@ module.exports = {
 				// Mode specified
 				case "SimpleKZ":
 					mode = "kz_simple";
+					modeID = 201;
 					break;
 
 				case "KZTimer":
 					mode = "kz_timer";
+					modeID = 200;
 					break;
 
 				case "Vanilla":
 					mode = "kz_vanilla";
+					modeID = 202;
 					break;
 
 				// Mode unspecified
@@ -139,12 +126,12 @@ module.exports = {
 
 			/* Maplist */
 			let [allCompleted, allMaps, doable] = await Promise.all([
-				globalFunctions.getTimes(steamID, runtype, mode),
+				globalFunctions.getTimes(steamID, mode, runtype),
 				globalFunctions.getMapsAPI(),
-				globalFunctions.getDoableMaps(runtype, mode),
+				globalFunctions.getFilterDistAPI(runtype, modeID),
 			]);
 
-			if ([allCompleted, allMaps, doable].includes("bad"))
+			if ([allCompleted, allMaps, doable].includes(undefined))
 				return answer({ content: "API Error. Please try again later." });
 			const mapTiers = new Map();
 			let unfinishedMaps = [];
