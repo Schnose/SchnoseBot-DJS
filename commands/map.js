@@ -36,18 +36,18 @@ module.exports = {
 		let [filterSKZ, filterKZT, filterVNL] = ["❌", "❌", "❌"];
 
 		let [mapFilter, kzgoData] = await Promise.all([
-			globalFunctions.checkFilters(mapsMap.get(map), 0),
-			globalFunctions.kzgoMaps(),
+			globalFunctions.getFiltersAPI(mapsMap.get(map), 0),
+			globalFunctions.getMapsKZGO(),
 		]);
 
-		if ([mapFilter, kzgoData].includes("bad")) return answer({ content: "API Error. Please try again later." });
+		if ([mapFilter, kzgoData].includes(undefined)) return answer({ content: "API Error. Please try again later." });
 
 		let SKZ, KZT, VNL;
 
 		mapFilter.forEach((i) => {
-			if (i.mode_id === 200) KZT = true;
-			else if (i.mode_id === 201) SKZ = true;
-			else if (i.mode_id === 202) VNL = true;
+			if (i.modeID === 200) KZT = true;
+			else if (i.modeID === 201) SKZ = true;
+			else if (i.modeID === 202) VNL = true;
 		});
 
 		if (SKZ) filterSKZ = "✅";
