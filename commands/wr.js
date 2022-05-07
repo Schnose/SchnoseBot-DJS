@@ -95,17 +95,17 @@ module.exports = {
 				globalFunctions.getWR(map.name, 0, "kz_vanilla", true),
 				globalFunctions.getWR(map.name, 0, "kz_vanilla", false),
 			]);
+			let requests = [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO];
 
-			if ([skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO].includes(undefined))
-				return answer({ content: "API Error. Please try again later." });
+			if (requests.includes(undefined)) return answer({ content: "API Error. Please try again later." });
 
 			const [skzTPTime, skzPROTime, kztTPTime, kztPROTime, vnlTPTime, vnlPROTime] = [
-				globalFunctions.convertmin(skzTP.time),
-				globalFunctions.convertmin(skzPRO.time),
-				globalFunctions.convertmin(kztTP.time),
-				globalFunctions.convertmin(kztPRO.time),
-				globalFunctions.convertmin(vnlTP.time),
-				globalFunctions.convertmin(vnlPRO.time),
+				globalFunctions.convertmin(skzTP?.time),
+				globalFunctions.convertmin(skzPRO?.time),
+				globalFunctions.convertmin(kztTP?.time),
+				globalFunctions.convertmin(kztPRO?.time),
+				globalFunctions.convertmin(vnlTP?.time),
+				globalFunctions.convertmin(vnlPRO?.time),
 			];
 
 			const embed = new MessageEmbed()
@@ -116,22 +116,22 @@ module.exports = {
 				.addFields(
 					{
 						name: "SimpleKZ",
-						value: `TP: ${skzTPTime} (*${skzTP.player_name || "None"}*)\nPRO: ${skzPROTime} (*${
-							skzPRO.player_name || "None"
+						value: `TP: ${skzTPTime || "-"} (*${skzTP?.player_name || "None"}*)\nPRO: ${skzPROTime} (*${
+							skzPRO?.player_name || "None"
 						}*)`,
 						inline: false,
 					},
 					{
 						name: "KZTimer",
-						value: `TP: ${kztTPTime} (*${kztTP.player_name || "None"}*)\nPRO: ${kztPROTime} (*${
-							kztPRO.player_name || "None"
+						value: `TP: ${kztTPTime || "-"} (*${kztTP?.player_name || "None"}*)\nPRO: ${kztPROTime} (*${
+							kztPRO?.player_name || "None"
 						}*)`,
 						inline: false,
 					},
 					{
 						name: "Vanilla",
-						value: `TP: ${vnlTPTime} (*${vnlTP.player_name || "None"}*)\nPRO: ${vnlPROTime} (*${
-							vnlPRO.player_name || "None"
+						value: `TP: ${vnlTPTime || "-"} (*${vnlTP?.player_name || "None"}*)\nPRO: ${vnlPROTime} (*${
+							vnlPRO?.player_name || "None"
 						}*)`,
 						inline: false,
 					}

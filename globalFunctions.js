@@ -25,6 +25,7 @@ const globalFunctions = {
 
 	// Convert UNIX timestamp into a nicer time format
 	convertmin: function (num) {
+		if (isNaN(num)) return "-";
 		let millies = Math.floor(((num % 1) * 1000) / 1);
 		num = Math.floor(num / 1);
 		if (num == 0) return "None";
