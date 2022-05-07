@@ -116,21 +116,21 @@ module.exports = {
 				.addFields(
 					{
 						name: "SimpleKZ",
-						value: `TP: ${skzTPTime || "-"} (*${skzTP?.player_name || "None"}*)\nPRO: ${skzPROTime} (*${
+						value: `TP: ${skzTPTime} (*${skzTP?.player_name || "None"}*)\nPRO: ${skzPROTime} (*${
 							skzPRO?.player_name || "None"
 						}*)`,
 						inline: false,
 					},
 					{
 						name: "KZTimer",
-						value: `TP: ${kztTPTime || "-"} (*${kztTP?.player_name || "None"}*)\nPRO: ${kztPROTime} (*${
+						value: `TP: ${kztTPTime} (*${kztTP?.player_name || "None"}*)\nPRO: ${kztPROTime} (*${
 							kztPRO?.player_name || "None"
 						}*)`,
 						inline: false,
 					},
 					{
 						name: "Vanilla",
-						value: `TP: ${vnlTPTime || "-"} (*${vnlTP?.player_name || "None"}*)\nPRO: ${vnlPROTime} (*${
+						value: `TP: ${vnlTPTime} (*${vnlTP?.player_name || "None"}*)\nPRO: ${vnlPROTime} (*${
 							vnlPRO?.player_name || "None"
 						}*)`,
 						inline: false,
