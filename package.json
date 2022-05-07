@@ -1,29 +1,40 @@
 {
 	"name": "schnosebot",
-	"version": "3.0.0",
+	"version": "4.0.0",
 	"description": "Discord Bot for CS:GO KZ Commands",
-	"main": "bot.js",
+	"main": "./dist/bot.js",
 	"scripts": {
-		"start": "node bot.js",
-		"dev": "nodemon bot.js"
+		"start": "node ./dist/bot.js",
+		"dev": "nodemon ./dist/bot.js",
+		"build": "tsc",
+		"watch": "tsc -w"
 	},
-	"keywords": [
-		"KZ",
-		"Kreedz",
-		"Discord"
-	],
-	"author": "AlphaKeks",
-	"license": "GPLv3",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Schnose/SchnoseBot-DJS.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Schnose/SchnoseBot-DJS/issues"
+	},
+	"homepage": "https://github.com/Schnose/SchnoseBot-DJS#readme",
+	"devDependencies": {
+		"@types/glob": "^7.2.0",
+		"@types/node": "^17.0.27",
+		"nodemon": "^2.0.15",
+		"typescript": "^4.6.3"
+	},
 	"dependencies": {
-		"@discordjs/builders": "^0.12.0",
-		"@discordjs/rest": "^0.3.0",
-		"axios": "^0.26.0",
-		"discord-api-types": "^0.27.3",
+		"@discordjs/builders": "^0.13.0",
+		"@discordjs/rest": "^0.4.1",
+		"axios": "^0.27.2",
+		"discord-api-types": "^0.32.0",
 		"discord.js": "^13.6.0",
 		"discordjs-button-pagination": "^3.0.1",
 		"dotenv": "^16.0.0",
-		"glob": "^7.2.0",
-		"mongoose": "^6.2.3",
-		"nodemon": "^2.0.15"
+		"glob": "^8.0.1",
+		"mongoose": "^6.3.2"
 	}
 }

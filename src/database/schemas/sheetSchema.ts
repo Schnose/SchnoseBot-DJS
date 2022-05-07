@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const sheetSchema = new mongoose.Schema({
 	mapList: Object,
@@ -13,4 +13,4 @@ const sheetSchema = new mongoose.Schema({
 	jsArea: Boolean,
 });
 
-module.exports = mongoose.model("tierSheet", sheetSchema);
+export default mongoose.model("tierSheet", sheetSchema);
