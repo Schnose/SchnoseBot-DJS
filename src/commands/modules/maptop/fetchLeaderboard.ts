@@ -1,12 +1,12 @@
-import { CommandInteraction as Interaction, MessageEmbed } from "discord.js";
-import { convertmin, getMaptop } from "../../../globalFunctions";
-require("dotenv").config();
+import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
+import { convertmin, getMaptop } from '../../../globalFunctions';
+require('dotenv').config();
 
 export async function fetchLeaderboard(interaction: Interaction, map: any, mode: string, course: number, runtype: boolean) {
 	let maptop: any = await getMaptop(interaction, map.name, mode, course, runtype);
-	if (mode === "kz_timer") mode = "KZTimer";
-	else if (mode === "kz_simple") mode = "SimpleKZ";
-	else mode = "Vanilla";
+	if (mode === 'kz_timer') mode = 'KZTimer';
+	else if (mode === 'kz_simple') mode = 'SimpleKZ';
+	else mode = 'Vanilla';
 
 	const leaderboard: any[] = [];
 
@@ -31,14 +31,14 @@ export async function fetchLeaderboard(interaction: Interaction, map: any, mode:
 		}
 
 		const embed = new MessageEmbed()
-			.setColor("#7480c2")
+			.setColor('#7480c2')
 			.setTitle(`${map.name} - Maptop`)
 			.setURL(`https://kzgo.eu/maps/${map.name}`)
-			.setDescription(`Mode: ${mode} | Runtype: ${runtype ? "TP" : "PRO"}`)
+			.setDescription(`Mode: ${mode} | Runtype: ${runtype ? 'TP' : 'PRO'}`)
 			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 			.addFields(pageEntries)
 			.setFooter({
-				text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",
+				text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church',
 				iconURL: process.env.ICON,
 			});
 		embeds.push(embed);

@@ -1,6 +1,6 @@
-import axios from "axios";
-import { CommandInteraction as Interaction } from "discord.js";
-import fs from "fs";
+import axios from 'axios';
+import { CommandInteraction as Interaction } from 'discord.js';
+import fs from 'fs';
 
 /* Utility */
 
@@ -25,51 +25,51 @@ export const getFiles = (dir: string, suffix: string) => {
 
 // Convert UNIX time into a fancy timestamp
 export const convertmin = (num: number) => {
-	if (isNaN(num)) return "None";
+	if (isNaN(num)) return 'None';
 
 	let millies = Math.floor(((num % 1) * 1000) / 1);
 	num = Math.floor(num / 1);
-	if (num == 0) return "None";
+	if (num == 0) return 'None';
 	let hours = Math.floor(num / 60 / 60);
 	let minutes = Math.floor(num / 60) - hours * 60;
 	let seconds = num % 60;
 
 	if (hours != 0) {
 		return (
-			hours.toString().padStart(2, "0") +
-			":" +
-			minutes.toString().padStart(2, "0") +
-			":" +
-			seconds.toString().padStart(2, "0") +
-			"." +
-			millies.toString().padStart(3, "0")
+			hours.toString().padStart(2, '0') +
+			':' +
+			minutes.toString().padStart(2, '0') +
+			':' +
+			seconds.toString().padStart(2, '0') +
+			'.' +
+			millies.toString().padStart(3, '0')
 		);
 	} else {
 		return (
-			minutes.toString().padStart(2, "0") +
-			":" +
-			seconds.toString().padStart(2, "0") +
-			"." +
-			millies.toString().padStart(3, "0")
+			minutes.toString().padStart(2, '0') +
+			':' +
+			seconds.toString().padStart(2, '0') +
+			'.' +
+			millies.toString().padStart(3, '0')
 		);
 	}
 };
 
 // 1000000 -> 1,000,000
 export const numberWithCommas = (x: string) => {
-	return x.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return x.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 // default error message for database errors
 export const errDB = (interaction: Interaction, err: any) => {
 	console.error(err);
-	return answer(interaction, { content: "Database error. Please contact `AlphaKeks#9826` about this." });
+	return answer(interaction, { content: 'Database error. Please contact `AlphaKeks#9826` about this.' });
 };
 
 // default error message for API errors
 export const errAPI = (interaction: Interaction, err: any) => {
 	console.error(err);
-	return answer(interaction, { content: "API Error. Please try again later." });
+	return answer(interaction, { content: 'API Error. Please try again later.' });
 };
 
 // default generic error message
@@ -78,7 +78,7 @@ export const errDef = (interaction: Interaction, err: any) => {
 
 	return answer(interaction, {
 		content:
-			"Some kind of error occured. If you want to report this bug, you can do so [here](https://github.com/Schnose/SchnoseBot-DJS/issues)",
+			'Some kind of error occured. If you want to report this bug, you can do so [here](https://github.com/Schnose/SchnoseBot-DJS/issues)',
 	});
 };
 
@@ -94,10 +94,10 @@ export const answer = async (interaction: Interaction, input: any) => {
 export const getIDFromMention = (mention: string) => {
 	if (!mention) return;
 
-	if (mention.startsWith("<@") && mention.endsWith(">")) {
+	if (mention.startsWith('<@') && mention.endsWith('>')) {
 		mention = mention.slice(2, -1);
 
-		if (mention.startsWith("!")) {
+		if (mention.startsWith('!')) {
 			mention = mention.slice(1);
 		}
 
@@ -111,7 +111,7 @@ export const getIDFromMention = (mention: string) => {
 export const checkAPI = async (interaction: Interaction) => {
 	let result;
 	await axios
-		.get("https://kztimerglobal.com/api/v2.0/modes")
+		.get('https://kztimerglobal.com/api/v2.0/modes')
 		.then((response) => (result = response.data || null))
 		.catch((err) => {
 			errAPI(interaction, err);
@@ -147,29 +147,26 @@ export const validateMode = async (interaction: Interaction, mode: any, data: an
 	let result: any = { specified: false, mode: mode };
 	switch (mode) {
 		case null:
-			if (!data.List[target])
-				return answer(interaction, {
-					content: `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``,
-				});
+			if (!data.List[target]) return (result = null);
 			mode = data.List[target].mode;
 			switch (mode) {
-				case "all":
+				case 'all':
 					result.specified = false;
 					break;
 				default:
 					result.specified = true;
 			}
 			break;
-		case "KZTimer":
-			mode = "kz_timer";
+		case 'KZTimer':
+			mode = 'kz_timer';
 			result.specified = true;
 			break;
-		case "SimpleKZ":
-			mode = "kz_simple";
+		case 'SimpleKZ':
+			mode = 'kz_simple';
 			result.specified = true;
 			break;
-		case "Vanilla":
-			mode = "kz_vanilla";
+		case 'Vanilla':
+			mode = 'kz_vanilla';
 			result.specified = true;
 			break;
 		default:
@@ -181,13 +178,14 @@ export const validateMode = async (interaction: Interaction, mode: any, data: an
 
 // Check whether a target is valid or not
 export const validateTarget = async (interaction: Interaction, target: any) => {
-	if (target.startsWith("<@") && target.endsWith(">")) target = getIDFromMention(target);
+	if (!isNaN(target)) target = { discordID: target };
+	else if (target.startsWith('<@') && target.endsWith('>')) target = { discordID: getIDFromMention(target) };
 	else {
-		let result = await getPlayerAPI_name(interaction, target);
-		if (result) return (target = result);
+		let result: any = await getPlayerAPI_name(interaction, target);
+		if (result) return (target = { steam_id: result });
 		result = await getPlayerAPI_steamID(interaction, target);
-		if (result) return (target = result);
-		else return (target = null);
+		if (result) return (target = { steam_id: result.steam_id });
+		else return (target = {});
 	}
 	return target;
 };
@@ -227,7 +225,7 @@ export const getMapcycle = async (interaction: Interaction) => {
 		.get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
 		.then((response) => {
 			const maps = response.data;
-			mapcycle = maps.split("\r\n") || [];
+			mapcycle = maps.split('\r\n') || [];
 		})
 		.catch((err) => {
 			errDef(interaction, err);
@@ -390,13 +388,13 @@ export const getFilters = async (interaction: Interaction, mapID: number, course
 		modes.forEach((mode) => {
 			switch (mode.mode_id) {
 				case 200:
-					filters.push({ mode: "kz_timer", displayMode: "KZTimer", abbrMode: "KZT", modeID: 200 });
+					filters.push({ mode: 'kz_timer', displayMode: 'KZTimer', abbrMode: 'KZT', modeID: 200 });
 					break;
 				case 201:
-					filters.push({ mode: "kz_simple", displayMode: "SimpleKZ", abbrMode: "SKZ", modeID: 201 });
+					filters.push({ mode: 'kz_simple', displayMode: 'SimpleKZ', abbrMode: 'SKZ', modeID: 201 });
 					break;
 				case 202:
-					filters.push({ mode: "kz_vanilla", displayMode: "Vanilla", abbrMode: "VNL", modeID: 202 });
+					filters.push({ mode: 'kz_vanilla', displayMode: 'Vanilla', abbrMode: 'VNL', modeID: 202 });
 					break;
 				default:
 					filters = [{}];
@@ -567,13 +565,13 @@ export const getTop = async (interaction: Interaction, mode: string, stages: num
 	let top = [{}];
 	let modeID = 0;
 	switch (mode) {
-		case "kz_timer":
+		case 'kz_timer':
 			modeID = 200;
 			break;
-		case "kz_simple":
+		case 'kz_simple':
 			modeID = 201;
 			break;
-		case "kz_vanilla":
+		case 'kz_vanilla':
 			modeID = 202;
 			break;
 		default:

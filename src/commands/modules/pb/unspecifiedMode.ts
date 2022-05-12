@@ -1,10 +1,10 @@
-import { CommandInteraction as Interaction, MessageEmbed } from "discord.js";
-import { answer, convertmin, getPB } from "../../../globalFunctions";
-require("dotenv").config();
+import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
+import { answer, convertmin, getPB } from '../../../globalFunctions';
+require('dotenv').config();
 
 export async function unspecifiedMode(interaction: Interaction, steamID: string, map: any, course: number) {
 	let Player: any = {
-		name: "",
+		name: '',
 		KZT: {
 			TP: {},
 			PRO: {},
@@ -20,12 +20,12 @@ export async function unspecifiedMode(interaction: Interaction, steamID: string,
 	};
 
 	[Player.KZT.TP, Player.KZT.PRO, Player.SKZ.TP, Player.SKZ.PRO, Player.VNL.TP, Player.VNL.PRO] = await Promise.all([
-		getPB(interaction, steamID, map.name, course, "kz_timer", true),
-		getPB(interaction, steamID, map.name, course, "kz_timer", false),
-		getPB(interaction, steamID, map.name, course, "kz_simple", true),
-		getPB(interaction, steamID, map.name, course, "kz_simple", false),
-		getPB(interaction, steamID, map.name, course, "kz_vanilla", true),
-		getPB(interaction, steamID, map.name, course, "kz_vanilla", false),
+		getPB(interaction, steamID, map.name, course, 'kz_timer', true),
+		getPB(interaction, steamID, map.name, course, 'kz_timer', false),
+		getPB(interaction, steamID, map.name, course, 'kz_simple', true),
+		getPB(interaction, steamID, map.name, course, 'kz_simple', false),
+		getPB(interaction, steamID, map.name, course, 'kz_vanilla', true),
+		getPB(interaction, steamID, map.name, course, 'kz_vanilla', false),
 	]);
 
 	if (!Player.KZT.TP && !Player.KZT.PRO && !Player.SKZ.TP && !Player.SKZ.PRO && !Player.VNL.TP && !Player.VNL.PRO)
@@ -38,24 +38,24 @@ export async function unspecifiedMode(interaction: Interaction, steamID: string,
 		Player.VNL.TP.player_name ||
 		Player.VNL.PRO.player_name;
 	const embed = new MessageEmbed()
-		.setColor("#7480C2")
+		.setColor('#7480C2')
 		.setTitle(`${map.name} - PB`)
 		.setURL(`https://kzgo.eu/maps/${map.name}`)
 		.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 		.addFields(
 			{
-				name: "SimpleKZ",
-				value: `TP: ${convertmin(Player.SKZ.TP.time)}\nPRO: ${convertmin(Player.SKZ.PRO.time)}`,
+				name: 'SimpleKZ',
+				value: `TP: ${convertmin(Player.SKZ.TP.time)}\n\nPRO: ${convertmin(Player.SKZ.PRO.time)}`,
 				inline: true,
 			},
 			{
-				name: "KZTimer",
-				value: `TP: ${convertmin(Player.KZT.TP.time)}\nPRO: ${convertmin(Player.KZT.PRO.time)}`,
+				name: 'KZTimer',
+				value: `TP: ${convertmin(Player.KZT.TP.time)}\n\nPRO: ${convertmin(Player.KZT.PRO.time)}`,
 				inline: true,
 			},
 			{
-				name: "Vanilla",
-				value: `TP: ${convertmin(Player.VNL.TP.time)}\nPRO: ${convertmin(Player.VNL.PRO.time)}`,
+				name: 'Vanilla',
+				value: `TP: ${convertmin(Player.VNL.TP.time)}\n\nPRO: ${convertmin(Player.VNL.PRO.time)}`,
 				inline: true,
 			}
 		)
