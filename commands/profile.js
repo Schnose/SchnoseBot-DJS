@@ -1,24 +1,24 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
-const userSchema = require("../database/user-schema");
-const globalFunctions = require("../globalFunctions");
-const axios = require("axios");
-const { icon } = require("../config.json");
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageEmbed } = require('discord.js');
+const userSchema = require('../database/user-schema');
+const globalFunctions = require('../globalFunctions');
+const axios = require('axios');
+const { icon } = require('../config.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("profile")
-		.setDescription("Check a player profile.")
+		.setName('profile')
+		.setDescription('Check a player profile.')
 		.setDefaultPermission(true)
-		.addStringOption((o) => o.setName("target").setDescription("Select a Player.").setRequired(false))
+		.addStringOption((o) => o.setName('target').setDescription('Select a Player.').setRequired(false))
 		.addStringOption((o) =>
 			o
-				.setName("mode")
-				.setDescription("Select a Mode.")
+				.setName('mode')
+				.setDescription('Select a Mode.')
 				.setRequired(false)
-				.addChoice("SKZ", "SimpleKZ")
-				.addChoice("KZT", "KZTimer")
-				.addChoice("VNL", "Vanilla")
+				.addChoice('SKZ', 'SimpleKZ')
+				.addChoice('KZT', 'KZTimer')
+				.addChoice('VNL', 'Vanilla')
 		),
 
 	async execute(interaction) {
@@ -30,26 +30,30 @@ module.exports = {
 		userSchema.findOne(async (err, data) => {
 			if (err) return console.error(err);
 
-			let target = interaction.options.getString("target") || null;
-			let displayMode = interaction.options.getString("mode") || null;
+			let target = interaction.options.getString('target') || null;
+			let displayMode = interaction.options.getString('mode') || null;
 			let mode, modeID, steamID;
 
 			/* Validate Target */
 
 			if (!target) target = interaction.user.id;
-			else steamID = await (globalFunctions.validateTarget(target)).steam_id;
+			else steamID = await globalFunctions.validateTarget(target).steam_id;
 
 			// No Target specified and also no DB entries
-			if (!steamID) {
+			if (!isNaN(steamID)) {
 				if (!data.List[target])
 					return answer({
 						contenet: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
+			} else {
+				return answer({
+					content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
+				});
 			}
 
 			let Player = await globalFunctions.getPlayerAPI_steamID(steamID);
-			Player.preferenceMode = "None";
+			Player.preferenceMode = 'None';
 
 			/* Validate Mode */
 			switch (displayMode) {
@@ -62,22 +66,22 @@ module.exports = {
 						});
 					mode = data.List[target].mode;
 					switch (mode) {
-						case "kz_simple":
-							displayMode = "SimpleKZ";
+						case 'kz_simple':
+							displayMode = 'SimpleKZ';
 							modeID = 201;
 							break;
 
-						case "kz_timer":
-							displayMode = "KZTimer";
+						case 'kz_timer':
+							displayMode = 'KZTimer';
 							modeID = 200;
 							break;
 
-						case "kz_vanilla":
-							displayMode = "Vanilla";
+						case 'kz_vanilla':
+							displayMode = 'Vanilla';
 							modeID = 202;
 							break;
 
-						case "all":
+						case 'all':
 							return answer({
 								content: `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``,
 							});
@@ -85,18 +89,18 @@ module.exports = {
 					break;
 
 				// Mode specified
-				case "SimpleKZ":
-					mode = "kz_simple";
+				case 'SimpleKZ':
+					mode = 'kz_simple';
 					modeID = 201;
 					break;
 
-				case "KZTimer":
-					mode = "kz_timer";
+				case 'KZTimer':
+					mode = 'kz_timer';
 					modeID = 200;
 					break;
 
-				case "Vanilla":
-					mode = "kz_vanilla";
+				case 'Vanilla':
+					mode = 'kz_vanilla';
 					modeID = 202;
 					break;
 			}
@@ -106,20 +110,20 @@ module.exports = {
 				if (data.List[target].mode) {
 					Player.preferenceMode = data.List[target].mode;
 					switch (Player.preferenceMode) {
-						case "kz_simple":
-							Player.preferenceMode = "SKZ";
+						case 'kz_simple':
+							Player.preferenceMode = 'SKZ';
 							break;
 
-						case "kz_timer":
-							Player.preferenceMode = "KZT";
+						case 'kz_timer':
+							Player.preferenceMode = 'KZT';
 							break;
 
-						case "kz_vanilla":
-							Player.preferenceMode = "VNL";
+						case 'kz_vanilla':
+							Player.preferenceMode = 'VNL';
 							break;
 
-						case "all":
-							Player.preferenceMode = "None";
+						case 'all':
+							Player.preferenceMode = 'None';
 					}
 				}
 			}
@@ -134,7 +138,7 @@ module.exports = {
 			]);
 
 			if ([allTP, allPRO, allMaps, doableTP, doablePRO].includes(undefined))
-				return answer({ content: "API Error. Please try again later." });
+				return answer({ content: 'API Error. Please try again later.' });
 
 			// TODO: clean this up a bit
 			const mapTiers = new Map();
@@ -155,7 +159,7 @@ module.exports = {
 
 			allMaps.forEach((i) => {
 				mapTiers.set(i.name, i.difficulty);
-				if (doableTP.includes(i.id) && !i.name.includes("kzpro_")) {
+				if (doableTP.includes(i.id) && !i.name.includes('kzpro_')) {
 					mapsTP[0]++;
 					mapsTP[i.difficulty]++;
 				}
@@ -175,19 +179,19 @@ module.exports = {
 			let strperccompletionPRO = [];
 
 			let overallTP = 0;
-			let stroverallTP = "";
+			let stroverallTP = '';
 			let overallPRO = 0;
-			let stroverallPRO = "";
+			let stroverallPRO = '';
 			let averageTP = 0;
-			let straverageTP = "";
+			let straverageTP = '';
 			let averagePRO = 0;
-			let straveragePRO = "";
+			let straveragePRO = '';
 			let averageTPx = 0;
 			let averagePROx = 0;
 			let TPWRs = 0;
-			let strTPWRs = "";
+			let strTPWRs = '';
 			let PROWRs = 0;
-			let strPROWRs = "";
+			let strPROWRs = '';
 
 			let mapsdone = [];
 
@@ -227,23 +231,23 @@ module.exports = {
 				//
 			});
 			strTPWRs = TPWRs.toString();
-			let line1gap = "";
+			let line1gap = '';
 			for (let x = 0; x < 3 - strTPWRs.length; x++) {
-				line1gap += "⠀";
+				line1gap += '⠀';
 			}
 			strPROWRs = PROWRs.toString();
 			averageTP = (overallTP / averageTPx).toFixed(2);
 			averagePRO = (overallPRO / averagePROx).toFixed(2);
 			straverageTP = averageTP.toString();
-			let line12gap = "";
+			let line12gap = '';
 			for (let x = 0; x < 6 - straverageTP.length; x++) {
-				line12gap += "⠀";
+				line12gap += '⠀';
 			}
 			straveragePRO = averagePRO.toString();
 			stroverallTP = overallTP.toString();
 			stroverallTP = globalFunctions.numberWithCommas(stroverallTP);
 			for (let x = 0; x < 9 - stroverallTP.length; x++) {
-				line12gap += "⠀";
+				line12gap += '⠀';
 			}
 			stroverallPRO = overallPRO.toString();
 			stroverallPRO = globalFunctions.numberWithCommas(stroverallPRO);
@@ -251,19 +255,19 @@ module.exports = {
 			let overalloverallPoints = (overallTP + overallPRO).toString();
 			overalloverallPoints = globalFunctions.numberWithCommas(overalloverallPoints);
 
-			if (mode == "kz_simple") {
+			if (mode == 'kz_simple') {
 				mapsTP[0]--;
 				mapsPRO[0]--;
 				mapsTP[5]--; //synergy_x has a filter
 				mapsPRO[5]--;
 			}
-			if (mode == "kz_vanilla") {
+			if (mode == 'kz_vanilla') {
 				//using kzgo api to fix scuffed vnl
 				mapsTP = [0, 0, 0, 0, 0, 0, 0, 0];
 				//const response = await axios.get("https://kzgo.eu/api/maps/completion/kz_vanilla");
 				//console.log(response);
 				await axios
-					.get("https://kzgo.eu/api/maps/completion/kz_vanilla")
+					.get('https://kzgo.eu/api/maps/completion/kz_vanilla')
 					.then(function (response) {
 						let cock = response.data;
 						mapsTP[0] = cock.total;
@@ -275,26 +279,26 @@ module.exports = {
 					})
 					.catch((err) => {
 						console.log(err);
-						return answer({ content: "API error! Please try again later" });
+						return answer({ content: 'API error! Please try again later' });
 					});
 			}
 			TPcompletion.forEach((x) => {
-				strTpcompletion.push(x.toString().padStart(3, " "));
+				strTpcompletion.push(x.toString().padStart(3, ' '));
 			});
 			PROcompletion.forEach((x) => {
-				strPROcompletion.push(x.toString().padStart(3, " "));
+				strPROcompletion.push(x.toString().padStart(3, ' '));
 			});
 			mapsTP.forEach((x) => {
-				strmapsTP.push(x.toString().padStart(3, " "));
+				strmapsTP.push(x.toString().padStart(3, ' '));
 			});
 			mapsPRO.forEach((x) => {
-				strmapsPRO.push(x.toString().padStart(3, " "));
+				strmapsPRO.push(x.toString().padStart(3, ' '));
 			});
-			let gapline3 = "";
+			let gapline3 = '';
 			if (perccompletionTP[0] < 10) {
-				gapline3 = "⠀⠀";
+				gapline3 = '⠀⠀';
 			} else if (perccompletionTP[0] < 100) {
-				gapline3 = "⠀";
+				gapline3 = '⠀';
 			}
 			for (let x = 0; x < mapsTP.length; x++) {
 				if (mapsTP[x] != 0) perccompletionTP[x] = ((TPcompletion[x] / mapsTP[x]) * 100).toFixed(0);
@@ -303,8 +307,8 @@ module.exports = {
 				else perccompletionPRO[x] = 0;
 			}
 			for (let x = 0; x < perccompletionTP.length; x++) {
-				strperccompletionTP.push(perccompletionTP[x].toString().padStart(3, " ") + "%");
-				strperccompletionPRO.push(perccompletionPRO[x].toString().padStart(3, " ") + "%");
+				strperccompletionTP.push(perccompletionTP[x].toString().padStart(3, ' ') + '%');
+				strperccompletionPRO.push(perccompletionPRO[x].toString().padStart(3, ' ') + '%');
 			}
 
 			let barsTP = [];
@@ -312,47 +316,47 @@ module.exports = {
 
 			perccompletionTP.forEach((i) => {
 				let x = Math.floor(i / 10);
-				let bar = "";
+				let bar = '';
 				for (let y = 0; y < x; y++) {
-					bar += "█";
+					bar += '█';
 				}
 				for (let y = 0; y < 10 - x; y++) {
-					bar += "░";
+					bar += '░';
 				}
 				barsTP.push(bar);
 			});
 			perccompletionPRO.forEach((i) => {
 				let x = Math.floor(i / 10);
-				let bar = "";
+				let bar = '';
 				for (let y = 0; y < x; y++) {
-					bar += "█";
+					bar += '█';
 				}
 				for (let y = 0; y < 10 - x; y++) {
-					bar += "░";
+					bar += '░';
 				}
 				barsPRO.push(bar);
 			});
 			for (let i = 1; i < mapsTP.length; i++) {
 				if (mapsTP[i] == 0) {
-					barsTP[i] = "          No maps          ";
-					strperccompletionTP[i] = "100%";
+					barsTP[i] = '          No maps          ';
+					strperccompletionTP[i] = '100%';
 				}
 				if (mapsPRO[i] == 0) {
-					barsPRO[i] = "          No maps          ";
-					strperccompletionPRO[i] = "100%";
+					barsPRO[i] = '          No maps          ';
+					strperccompletionPRO[i] = '100%';
 				}
 			}
 
 			let embed = new MessageEmbed()
-				.setColor("#7480c2")
+				.setColor('#7480c2')
 				.setTitle(`${displayMode} Profile - ${Player.name}`)
 				.setURL(`https://steamcommunity.com/profiles/${Player.steamid64}`)
 				.setDescription(
 					`\`>> TP | 🏆 WRS: ${strTPWRs}\`⠀⠀⠀⠀⠀⠀⠀${line1gap}⠀⠀ ⠀⠀⠀\`>> PRO | 🏆 WRS: ${strPROWRs}\`
                     ─────────────────────────────────────────────────
                     \`Total Completion: ${TPcompletion[0]}/${mapsTP[0]} (${
-						perccompletionTP[0] + "%"
-					})\`⠀⠀${gapline3}      \`Total Completion: ${PROcompletion[0]}/${mapsPRO[0]} (${perccompletionPRO[0] + "%"})\`
+						perccompletionTP[0] + '%'
+					})\`⠀⠀${gapline3}      \`Total Completion: ${PROcompletion[0]}/${mapsPRO[0]} (${perccompletionPRO[0] + '%'})\`
                     
                     \`Tier 1:\` ⌠ ${barsTP[1]} ⌡ - \`${strperccompletionTP[1]}\`⠀⠀⠀⠀\`Tier 1:\` ⌠ ${barsPRO[1]} ⌡ - \`${
 						strperccompletionPRO[1]
@@ -397,7 +401,7 @@ module.exports = {
 					}
 				)
 				.setFooter({
-					text: "(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church",
+					text: '(͡ ͡° ͜ つ ͡͡°)7 | schnose.eu/church',
 					iconURL: icon,
 				});
 
