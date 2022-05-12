@@ -52,13 +52,9 @@ module.exports = {
 			if (!isNaN(steamID)) {
 				if (!data.List[target])
 					return answer({
-						contenet: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
+						content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
-			} else {
-				return answer({
-					content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
-				});
 			}
 
 			/* Validate Mode */

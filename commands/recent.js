@@ -35,10 +35,6 @@ module.exports = {
 						content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
 					});
 				steamID = data.List[target].steamId;
-			} else {
-				return answer({
-					content: `You either have to specify a target or set your steamID using the following command:\n \`\`\`\n/setsteam\n\`\`\``,
-				});
 			}
 
 			let [skzTP, skzPRO, kztTP, kztPRO, vnlTP, vnlPRO] = await Promise.all([
