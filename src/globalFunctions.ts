@@ -388,7 +388,29 @@ export const getSteamID_DB = async (interaction: Interaction, data: any, target:
 // Get the filters for a map from the GlobalAPI
 export const getFilters = async (interaction: Interaction, mapID: number, course: number) => {
 	let modes: any[] = [{}];
-	let filters = [{}];
+	let filters: any = {
+		KZT: {
+			mode: 'kz_timer',
+			displayMode: 'KZTimer',
+			abbrMode: 'KZT',
+			modeID: 200,
+			icon: '❌',
+		},
+		SKZ: {
+			mode: 'kz_simple',
+			displayMode: 'SimpleKZ',
+			abbrMode: 'SKZ',
+			modeID: 201,
+			icon: '❌',
+		},
+		VNL: {
+			mode: 'kz_vanilla',
+			displayMode: 'Vanilla',
+			abbrMode: 'VNL',
+			modeID: 202,
+			icon: '❌',
+		},
+	};
 	await axios
 		.get(`https://kztimerglobal.com/api/v2.0/record_filters?`, {
 			params: {
@@ -407,13 +429,13 @@ export const getFilters = async (interaction: Interaction, mapID: number, course
 		modes.forEach((mode) => {
 			switch (mode.mode_id) {
 				case 200:
-					filters.push({ mode: 'kz_timer', displayMode: 'KZTimer', abbrMode: 'KZT', modeID: 200 });
+					filters.KZT.icon = '✅';
 					break;
 				case 201:
-					filters.push({ mode: 'kz_simple', displayMode: 'SimpleKZ', abbrMode: 'SKZ', modeID: 201 });
+					filters.SKZ.icon = '✅';
 					break;
 				case 202:
-					filters.push({ mode: 'kz_vanilla', displayMode: 'Vanilla', abbrMode: 'VNL', modeID: 202 });
+					filters.VNL.icon = '✅';
 					break;
 				default:
 					filters = [{}];
