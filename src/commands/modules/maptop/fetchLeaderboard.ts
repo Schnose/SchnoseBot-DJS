@@ -32,7 +32,7 @@ export async function fetchLeaderboard(interaction: Interaction, map: any, mode:
 
 		const embed = new MessageEmbed()
 			.setColor('#7480c2')
-			.setTitle(`${map.name} - Maptop`)
+			.setTitle(course > 0 ? `${map.name} - BMaptop ${course}` : `${map.name} - Maptop`)
 			.setURL(`https://kzgo.eu/maps/${map.name}`)
 			.setDescription(`Mode: ${mode} | Runtype: ${runtype ? 'TP' : 'PRO'}`)
 			.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)

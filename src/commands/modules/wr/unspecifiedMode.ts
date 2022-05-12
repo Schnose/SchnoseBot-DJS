@@ -33,7 +33,7 @@ export async function unspecifiedMode(interaction: Interaction, map: any, course
 
 	const embed = new MessageEmbed()
 		.setColor('#7480C2')
-		.setTitle(`${map.name} - WR`)
+		.setTitle(course > 0 ? `${map.name} - BWR ${course}` : `${map.name} - WR`)
 		.setURL(`https://kzgo.eu/maps/${map.name}`)
 		.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 		.addFields(

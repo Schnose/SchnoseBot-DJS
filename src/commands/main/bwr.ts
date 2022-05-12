@@ -1,18 +1,18 @@
 import { CommandInteraction as Interaction } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { answer, errDB, getMapsAPI, validateCourse, validateMap, validateMode } from '../../globalFunctions';
+import { specifiedMode } from '../modules/wr/specifiedMode';
+import { unspecifiedMode } from '../modules/wr/unspecifiedMode';
 import userSchema from '../../database/schemas/userSchema';
-import { answer, errDB, getMapsAPI, getSteamID_DB, validateMap, validateMode, validateTarget } from '../../globalFunctions';
-import { specifiedMode } from '../modules/pb/specifiedMode';
-import { unspecifiedMode } from '../modules/pb/unspecifiedMode';
 require('dotenv').config();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('pb')
-		.setDescription("Check someone's personal best on a map.")
+		.setName('bwr')
+		.setDescription('Check a Bonus World Record on a map.')
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
-		.addStringOption((o) => o.setName('target').setDescription('Select a Player.').setRequired(false))
+		.addIntegerOption((o) => o.setName('course').setDescription('Select a Course.').setRequired(false))
 		.addStringOption((o) =>
 			o
 				.setName('mode')
@@ -31,12 +31,8 @@ module.exports = {
 			if (err) return errDB(interaction, err);
 
 			let map: any = interaction.options.getString('map')!.toLowerCase();
-			let target = interaction.options.getString('target') || null;
+			const course = interaction.options.getInteger('course') || 1;
 			let mode = interaction.options.getString('mode') || null;
-			let user: any = {
-				discordID: null,
-				steam_id: null,
-			};
 			const globalMaps = await getMapsAPI(interaction);
 			let response: any = {};
 
@@ -44,22 +40,16 @@ module.exports = {
 			map = await validateMap(map, globalMaps);
 			if (!map.name) return answer(interaction, { content: 'Please specify a valid map.' });
 
-			/* Validate Target */
-			if (!target) user.discordID = interaction.user.id;
-			else user = await validateTarget(interaction, target);
-			if (!user.steam_id) user.steam_id = await getSteamID_DB(interaction, data, user.discordID);
+			/* Validate Course */
+			if (!(await validateCourse(map.name, globalMaps, course)))
+				return answer(interaction, { content: 'Please specify a valid course.' });
 
 			/* Validate Mode */
-			const modeVal = await validateMode(interaction, mode, data, user.discordID);
-			if (!modeVal)
-				return answer(interaction, {
-					content: `You either have to specify a mode or set a default mode using the following command:\n \`\`\`\n/mode\n\`\`\``,
-				});
+			const modeVal = await validateMode(interaction, mode, data, interaction.user.id);
 
 			/* Execute API Requests */
-
-			if (modeVal.specified) response = await specifiedMode(interaction, user.steam_id, map, 0, modeVal.mode);
-			else response = await unspecifiedMode(interaction, user.steam_id, map, 0);
+			if (modeVal.specified) response = await specifiedMode(interaction, map, course, modeVal.mode);
+			else response = await unspecifiedMode(interaction, map, course);
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [response] });

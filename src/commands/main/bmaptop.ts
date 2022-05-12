@@ -2,17 +2,18 @@ import { CommandInteraction as Interaction, MessageButton } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 //@ts-ignore
 import paginationEmbed from 'discordjs-button-pagination';
-import { answer, errDB, getMapsAPI, validateMap, validateMode } from '../../globalFunctions';
+import { answer, errDB, getMapsAPI, validateCourse, validateMap, validateMode } from '../../globalFunctions';
 import userSchema from '../../database/schemas/userSchema';
 import { fetchLeaderboard } from '../modules/maptop/fetchLeaderboard';
 require('dotenv').config();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('maptop')
-		.setDescription("Check a map's Top 100.")
+		.setName('bmaptop')
+		.setDescription('Check a bonus Top 100.')
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
+		.addIntegerOption((o) => o.setName('course').setDescription('Select a Course.').setRequired(false))
 		.addStringOption((o) =>
 			o
 				.setName('mode')
@@ -38,6 +39,7 @@ module.exports = {
 			if (err) return errDB(interaction, err);
 
 			let map: any = interaction.options.getString('map')!.toLowerCase();
+			const course = interaction.options.getInteger('course') || 1;
 			let mode = interaction.options.getString('mode') || null;
 			let runtype = interaction.options.getString('runtype') === 'true' ? true : false;
 			const globalMaps = await getMapsAPI(interaction);
@@ -47,12 +49,16 @@ module.exports = {
 			map = await validateMap(map, globalMaps);
 			if (!map.name) return answer(interaction, { content: 'Please specify a valid map.' });
 
+			/* Validate Course */
+			if (!(await validateCourse(map.name, globalMaps, course)))
+				return answer(interaction, { content: 'Please specify a valid course.' });
+
 			/* Validate Mode */
 			const modeVal = await validateMode(interaction, mode, data, interaction.user.id);
 
 			/* Execute API Requests */
 			if (modeVal.specified) {
-				response = await fetchLeaderboard(interaction, map, modeVal.mode, 0, runtype);
+				response = await fetchLeaderboard(interaction, map, modeVal.mode, course, runtype);
 				if (!response[0]) return answer(interaction, { content: 'This map seems to have 0 completions.' });
 			} else return answer(interaction, { content: 'Please specify a mode or set a default one with `/mode`' });
 

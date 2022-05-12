@@ -1,17 +1,27 @@
 import { CommandInteraction as Interaction } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import userSchema from '../../database/schemas/userSchema';
-import { answer, errDB, getMapsAPI, getSteamID_DB, validateMap, validateMode, validateTarget } from '../../globalFunctions';
+import {
+	answer,
+	errDB,
+	getMapsAPI,
+	getSteamID_DB,
+	validateCourse,
+	validateMap,
+	validateMode,
+	validateTarget,
+} from '../../globalFunctions';
 import { specifiedMode } from '../modules/pb/specifiedMode';
 import { unspecifiedMode } from '../modules/pb/unspecifiedMode';
 require('dotenv').config();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('pb')
-		.setDescription("Check someone's personal best on a map.")
+		.setName('bpb')
+		.setDescription("Check someone's Personal Best on a bonus of a map.")
 		.setDefaultPermission(true)
 		.addStringOption((o) => o.setName('map').setDescription('Select a Map.').setRequired(true))
+		.addIntegerOption((o) => o.setName('course').setDescription('Select a Course.').setRequired(false))
 		.addStringOption((o) => o.setName('target').setDescription('Select a Player.').setRequired(false))
 		.addStringOption((o) =>
 			o
@@ -31,6 +41,7 @@ module.exports = {
 			if (err) return errDB(interaction, err);
 
 			let map: any = interaction.options.getString('map')!.toLowerCase();
+			const course = interaction.options.getInteger('course') || 1;
 			let target = interaction.options.getString('target') || null;
 			let mode = interaction.options.getString('mode') || null;
 			let user: any = {
@@ -43,6 +54,10 @@ module.exports = {
 			/* Validate Map */
 			map = await validateMap(map, globalMaps);
 			if (!map.name) return answer(interaction, { content: 'Please specify a valid map.' });
+
+			/* Validate Course */
+			if (!(await validateCourse(map.name, globalMaps, course)))
+				return answer(interaction, { content: 'Please specify a valid course.' });
 
 			/* Validate Target */
 			if (!target) user.discordID = interaction.user.id;
@@ -58,8 +73,8 @@ module.exports = {
 
 			/* Execute API Requests */
 
-			if (modeVal.specified) response = await specifiedMode(interaction, user.steam_id, map, 0, modeVal.mode);
-			else response = await unspecifiedMode(interaction, user.steam_id, map, 0);
+			if (modeVal.specified) response = await specifiedMode(interaction, user.steam_id, map, course, modeVal.mode);
+			else response = await unspecifiedMode(interaction, user.steam_id, map, course);
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [response] });

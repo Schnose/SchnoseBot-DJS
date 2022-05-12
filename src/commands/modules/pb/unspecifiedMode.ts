@@ -39,7 +39,7 @@ export async function unspecifiedMode(interaction: Interaction, steamID: string,
 		Player.VNL.PRO.player_name;
 	const embed = new MessageEmbed()
 		.setColor('#7480C2')
-		.setTitle(`${map.name} - PB`)
+		.setTitle(course > 0 ? `${map.name} - BPB ${course}` : `${map.name} - PB`)
 		.setURL(`https://kzgo.eu/maps/${map.name}`)
 		.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 		.addFields(
