@@ -109,15 +109,34 @@ export const getIDFromMention = (mention: string) => {
 
 // Check GlobalAPI Status
 export const checkAPI = async (interaction: Interaction) => {
-	let result;
+	let status: any = [];
 	await axios
-		.get('https://kztimerglobal.com/api/v2.0/modes')
-		.then((response) => (result = response.data || null))
+		.get('https://status.global-api.com/api/v2/summary.json')
+		.then((response) => {
+			let apiStatus = {
+				status: response.data.status.description,
+				frontend: response.data.components[0].status,
+				backend: response.data.components[1].status,
+			};
+			status.push(apiStatus);
+		})
 		.catch((err) => {
 			errAPI(interaction, err);
-			result = undefined;
+			status = undefined;
 		});
-	return result;
+	await axios
+		.get('https://status.global-api.com/api/v2/incidents/unresolved.json')
+		.then((response) => {
+			let apiIncidents = {
+				latest: response.data.incidents[0]?.name || null,
+			};
+			status.push(apiIncidents);
+		})
+		.catch((err) => {
+			errAPI(interaction, err);
+			status = undefined;
+		});
+	return status;
 };
 
 // Check whether a map is valid or not
