@@ -1,14 +1,15 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction as Interaction } from "discord.js";
-import userSchema from "../../database/schemas/userSchema";
-import { answer, errDB, getMapsAPI, getRecent, getSteamID_DB, validateTarget } from "../../globalFunctions";
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
+import userSchema from '../../database/schemas/userSchema';
+import { answer, convertmin, errDB, getMapsAPI, getSteamID_DB, validateTarget } from '../../globalFunctions';
+import { getMostRecentPB } from '../modules/recent/getMostRecentPB';
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("recent")
+		.setName('recent')
 		.setDescription("Get a player's most recent Personal Best.")
 		.setDefaultPermission(true)
-		.addStringOption((o) => o.setName("target").setDescription("Select a Player.").setRequired(false)),
+		.addStringOption((o) => o.setName('target').setDescription('Select a Player.').setRequired(false)),
 
 	async execute(interaction: Interaction) {
 		interaction.deferReply();
@@ -16,8 +17,7 @@ module.exports = {
 		userSchema.findOne(async (err: any, data: any) => {
 			if (err) errDB(interaction, err);
 
-			let target = interaction.options.getString("target") || null;
-			let runtype: boolean, mode: string;
+			let target = interaction.options.getString('target') || null;
 
 			let user: any = {
 				discordID: null,
@@ -31,19 +31,11 @@ module.exports = {
 			else user = await validateTarget(interaction, target);
 			if (!user.steam_id) user.steam_id = await getSteamID_DB(interaction, data, user.discordID);
 
-			console.log(user);
-
 			/* Execute API Requests */
-			let [TP, PRO] = await Promise.all([
-				getRecent(interaction, user.steam_id, true),
-				getRecent(interaction, user.steam_id, false),
-			]);
-
-			console.log(TP, PRO);
+			response = await getMostRecentPB(interaction, user.steam_id);
 
 			/* Reply to the user */
-			//answer(interaction, { embeds: [response] });
-			answer(interaction, { content: "Hi" });
+			answer(interaction, { embeds: [response] });
 		});
 	},
 };
