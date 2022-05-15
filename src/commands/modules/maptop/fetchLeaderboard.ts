@@ -4,6 +4,8 @@ require('dotenv').config();
 
 export async function fetchLeaderboard(interaction: Interaction, map: any, mode: string, course: number, runtype: boolean) {
 	let maptop: any = await getMaptop(interaction, map.name, mode, course, runtype);
+	if (!maptop) return null;
+
 	if (mode === 'kz_timer') mode = 'KZTimer';
 	else if (mode === 'kz_simple') mode = 'SimpleKZ';
 	else mode = 'Vanilla';

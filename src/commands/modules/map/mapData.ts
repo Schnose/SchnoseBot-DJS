@@ -1,11 +1,11 @@
-import { CommandInteraction as Interaction, EmbedFieldData, MessageEmbed } from 'discord.js';
-import sheetSchema from '../../../database/schemas/sheetSchema';
-import { errDB, getFilters } from '../../../globalFunctions';
+import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
+import { getFilters } from '../../../globalFunctions';
 require('dotenv').config();
 
 export async function mapData(interaction: Interaction, data: any, map: any, kzgoMaps: any) {
 	/* Get Filters */
 	let filters = await getFilters(interaction, map.id, 0);
+	if (!filters) return null;
 
 	/* Get Data from KZGO */
 	let mapKZGO: any = {};

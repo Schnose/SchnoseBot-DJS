@@ -5,12 +5,12 @@ require('dotenv').config();
 export async function specifiedMode(interaction: Interaction, steamID: string, map: any, course: number, mode: string) {
 	let TP: any = {};
 	let PRO: any = {};
-	let title = ``;
 
 	let [tpRequest, proRequest]: any[] = await Promise.all([
 		getPB(interaction, steamID, map.name, course, mode, true),
 		getPB(interaction, steamID, map.name, course, mode, false),
 	]);
+	if (!tpRequest && !proRequest) return null;
 
 	if (tpRequest) {
 		TP = {

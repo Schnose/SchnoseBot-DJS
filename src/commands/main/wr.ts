@@ -44,6 +44,7 @@ module.exports = {
 			/* Execute API Requests */
 			if (modeVal.specified) response = await specifiedMode(interaction, map, 0, modeVal.mode);
 			else response = await unspecifiedMode(interaction, map, 0);
+			if (!response) return answer(interaction, { content: 'This map seems to have 0 completions.' });
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [response] });

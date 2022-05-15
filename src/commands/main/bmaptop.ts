@@ -59,8 +59,8 @@ module.exports = {
 			/* Execute API Requests */
 			if (modeVal.specified) {
 				response = await fetchLeaderboard(interaction, map, modeVal.mode, course, runtype);
-				if (!response[0]) return answer(interaction, { content: 'This map seems to have 0 completions.' });
-			} else return answer(interaction, { content: 'Please specify a mode or set a default one with `/mode`' });
+				if (!response) return answer(interaction, { content: 'This map seems to have 0 completions.' });
+			} else return answer(interaction, { content: 'Please specify a mode or set a default one with `/mode`.' });
 
 			/* Reply to the user */
 			const [button1, button2] = [

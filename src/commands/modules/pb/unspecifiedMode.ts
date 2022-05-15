@@ -1,42 +1,32 @@
 import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
-import { answer, convertmin, getPB } from '../../../globalFunctions';
+import { convertmin, getPB } from '../../../globalFunctions';
 require('dotenv').config();
 
 export async function unspecifiedMode(interaction: Interaction, steamID: string, map: any, course: number) {
-	let Player: any = {
-		name: '',
-		KZT: {
-			TP: {},
-			PRO: {},
-		},
-		SKZ: {
-			TP: {},
-			PRO: {},
-		},
-		VNL: {
-			TP: {},
-			PRO: {},
-		},
-	};
+	let playerName = '';
 
-	[Player.KZT.TP, Player.KZT.PRO, Player.SKZ.TP, Player.SKZ.PRO, Player.VNL.TP, Player.VNL.PRO] = await Promise.all([
-		getPB(interaction, steamID, map.name, course, 'kz_timer', true),
-		getPB(interaction, steamID, map.name, course, 'kz_timer', false),
-		getPB(interaction, steamID, map.name, course, 'kz_simple', true),
-		getPB(interaction, steamID, map.name, course, 'kz_simple', false),
-		getPB(interaction, steamID, map.name, course, 'kz_vanilla', true),
-		getPB(interaction, steamID, map.name, course, 'kz_vanilla', false),
-	]);
+	let [KZT, SKZ, VNL]: any = [
+		await Promise.all([
+			getPB(interaction, steamID, map.name, course, 'kz_timer', true),
+			getPB(interaction, steamID, map.name, course, 'kz_timer', false),
+		]),
+		await Promise.all([
+			getPB(interaction, steamID, map.name, course, 'kz_simple', true),
+			getPB(interaction, steamID, map.name, course, 'kz_simple', false),
+		]),
+		await Promise.all([
+			getPB(interaction, steamID, map.name, course, 'kz_vanilla', true),
+			getPB(interaction, steamID, map.name, course, 'kz_vanilla', false),
+		]),
+	];
 
-	if (!Player.KZT.TP && !Player.KZT.PRO && !Player.SKZ.TP && !Player.SKZ.PRO && !Player.VNL.TP && !Player.VNL.PRO)
-		return answer(interaction, { content: `No PB found for ${map.name}` });
-	Player.name =
-		Player.KZT.TP.player_name ||
-		Player.KZT.PRO.player_name ||
-		Player.SKZ.TP.player_name ||
-		Player.SKZ.PRO.player_name ||
-		Player.VNL.TP.player_name ||
-		Player.VNL.PRO.player_name;
+	if (!KZT && !SKZ && !VNL) return null;
+
+	[KZT, SKZ, VNL].forEach((i) => {
+		if (i[0].player_name) return (playerName = i[0].player_name);
+		if (i[1].player_name) return (playerName = i[1].player_name);
+	});
+
 	const embed = new MessageEmbed()
 		.setColor('#7480C2')
 		.setTitle(course > 0 ? `${map.name} - BPB ${course}` : `${map.name} - PB`)
@@ -44,23 +34,23 @@ export async function unspecifiedMode(interaction: Interaction, steamID: string,
 		.setThumbnail(`https://raw.githubusercontent.com/KZGlobalTeam/map-images/master/images/${map.name}.jpg`)
 		.addFields(
 			{
-				name: 'SimpleKZ',
-				value: `TP: ${convertmin(Player.SKZ.TP.time)}\n\nPRO: ${convertmin(Player.SKZ.PRO.time)}`,
+				name: 'KZTimer',
+				value: `TP: ${convertmin(KZT[0].time)}\n\nPRO: ${convertmin(KZT[1].time)}`,
 				inline: true,
 			},
 			{
-				name: 'KZTimer',
-				value: `TP: ${convertmin(Player.KZT.TP.time)}\n\nPRO: ${convertmin(Player.KZT.PRO.time)}`,
+				name: 'SimpleKZ',
+				value: `TP: ${convertmin(SKZ[0].time)}\n\nPRO: ${convertmin(SKZ[1].time)}`,
 				inline: true,
 			},
 			{
 				name: 'Vanilla',
-				value: `TP: ${convertmin(Player.VNL.TP.time)}\n\nPRO: ${convertmin(Player.VNL.PRO.time)}`,
+				value: `TP: ${convertmin(VNL[0].time)}\n\nPRO: ${convertmin(VNL[1].time)}`,
 				inline: true,
 			}
 		)
 		.setFooter({
-			text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${Player.name} | schnose.eu/church`,
+			text: `(͡ ͡° ͜ つ ͡͡°)7 | Player: ${playerName} | schnose.eu/church`,
 			iconURL: process.env.ICON,
 		});
 	return embed;

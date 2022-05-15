@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
+import { CommandInteraction as Interaction } from 'discord.js';
 import userSchema from '../../database/schemas/userSchema';
-import { answer, convertmin, errDB, getMapsAPI, getSteamID_DB, validateTarget } from '../../globalFunctions';
+import { answer, errDB, getSteamID_DB, validateTarget } from '../../globalFunctions';
 import { getMostRecentPB } from '../modules/recent/getMostRecentPB';
 
 module.exports = {
@@ -23,7 +23,6 @@ module.exports = {
 				discordID: null,
 				steam_id: null,
 			};
-			const globalMaps = await getMapsAPI(interaction);
 			let response: any = {};
 
 			/* Validate Target */
@@ -33,6 +32,7 @@ module.exports = {
 
 			/* Execute API Requests */
 			response = await getMostRecentPB(interaction, user.steam_id);
+			if (!response) return answer(interaction, { content: "This player doesn't have any recent times." });
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [response] });

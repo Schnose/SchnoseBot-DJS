@@ -18,6 +18,8 @@ export async function getMostRecentPB(interaction: Interaction, steamID: string)
 		]),
 	];
 
+	if (!KZT && !SKZ && !VNL) return null;
+
 	[KZT, SKZ, VNL].forEach((i) => {
 		recentTimes.set(i[0].created_on, i[0]);
 		recentTimes.set(i[1].created_on, i[1]);

@@ -75,6 +75,7 @@ module.exports = {
 
 			if (modeVal.specified) response = await specifiedMode(interaction, user.steam_id, map, course, modeVal.mode);
 			else response = await unspecifiedMode(interaction, user.steam_id, map, course);
+			if (!response) return answer(interaction, { content: `No PB found for ${map.name} B${course}.` });
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [response] });

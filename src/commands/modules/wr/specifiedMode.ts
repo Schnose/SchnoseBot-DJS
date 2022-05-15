@@ -10,6 +10,8 @@ export async function specifiedMode(interaction: Interaction, map: any, course: 
 		getWR(interaction, map.name, course, mode, false),
 	]);
 
+	if (!tpRequest && !proRequest) return null;
+
 	if (tpRequest) {
 		TP = {
 			name: tpRequest.player_name,

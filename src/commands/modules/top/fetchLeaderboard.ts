@@ -1,9 +1,11 @@
 import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
-import { convertmin, getTop } from '../../../globalFunctions';
+import { getTop } from '../../../globalFunctions';
 require('dotenv').config();
 
 export async function fetchLeaderboard(interaction: Interaction, mode: string, stages: number[], runtype: boolean) {
 	let top: any = await getTop(interaction, mode, stages, runtype);
+	if (!top) return null;
+
 	const modes = {
 		api: mode,
 		fancy: '',

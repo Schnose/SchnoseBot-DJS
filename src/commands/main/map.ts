@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction as Interaction, MessageEmbed } from 'discord.js';
-import { answer, errDB, getMapsAPI, getMapsKZGO, validateMap } from '../../globalFunctions';
+import { CommandInteraction as Interaction } from 'discord.js';
+import { answer, errAPI, errDB, getMapsAPI, getMapsKZGO, validateMap } from '../../globalFunctions';
 import sheetSchema from '../../database/schemas/sheetSchema';
 import { mapData } from '../modules/map/mapData';
 require('dotenv').config();
@@ -28,6 +28,13 @@ module.exports = {
 
 			/* Execute API Requests */
 			const mapEmbed = await mapData(interaction, data, map, kzgoMaps);
+			if (!mapEmbed)
+				return errAPI(interaction, {
+					user: interaction.user.username,
+					command: '/map',
+					date: Date.now(),
+					map: interaction.options.getString('map'),
+				});
 
 			/* Reply to the user */
 			answer(interaction, { embeds: [mapEmbed] });

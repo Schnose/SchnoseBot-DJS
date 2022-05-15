@@ -4,7 +4,7 @@ import { CommandInteraction as Interaction } from 'discord.js';
 //@ts-ignore
 import paginationEmbed from 'discordjs-button-pagination';
 import userSchema from '../../database/schemas/userSchema';
-import { answer, errDB, getMapsAPI, validateMode } from '../../globalFunctions';
+import { answer, errDB, validateMode } from '../../globalFunctions';
 import { fetchLeaderboard } from '../modules/top/fetchLeaderboard';
 
 module.exports = {
@@ -38,7 +38,7 @@ module.exports = {
 
 			let mode = interaction.options.getString('mode') || null;
 			let runtype = interaction.options.getString('runtype') === 'true' ? true : false;
-			let response = [{}];
+			let response: any;
 			let stages = [0];
 
 			/* Validate Mode */
@@ -47,7 +47,7 @@ module.exports = {
 			/* Execute API Requests */
 			if (modeVal.specified) {
 				response = await fetchLeaderboard(interaction, modeVal.mode, stages, runtype);
-			} else return answer(interaction, { content: 'Please specify a mode or set a default one with `/mode`' });
+			} else return answer(interaction, { content: 'Please specify a mode or set a default one with `/mode`.' });
 
 			/* Reply to the user */
 			const [button1, button2] = [
