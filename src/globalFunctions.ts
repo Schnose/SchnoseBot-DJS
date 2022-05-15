@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CommandInteraction as Interaction } from 'discord.js';
+import { CommandInteraction as Interaction, InteractionReplyOptions } from 'discord.js';
 import fs from 'fs';
 
 /* Utility */
@@ -85,7 +85,7 @@ export const errDef = (interaction: Interaction, err: any) => {
 /* discord.js */
 
 // default reply
-export const answer = async (interaction: Interaction, input: any) => {
+export const answer = async (interaction: Interaction, input: InteractionReplyOptions) => {
 	if (interaction.deferred === true) await interaction.editReply(input);
 	else await interaction.reply(input);
 };
