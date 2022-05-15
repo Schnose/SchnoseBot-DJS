@@ -60,7 +60,7 @@ module.exports = {
 			/* Validate Target */
 			if (!target) user.discordID = interaction.user.id;
 			else user = await validateTarget(interaction, target);
-			if (!user.steam_id) user.steam_id = (await getSteamID_DB(interaction, data, user.discordID)).steam_id;
+			if (!user.steam_id) user.steam_id = await getSteamID_DB(interaction, data, user.discordID);
 
 			/* Validate Mode */
 			const modeVal = await validateMode(interaction, mode, data, user.discordID);
