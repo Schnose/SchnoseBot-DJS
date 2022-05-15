@@ -201,7 +201,7 @@ export const validateTarget = async (interaction: Interaction, target: any) => {
 	else if (target.startsWith('<@') && target.endsWith('>')) target = { discordID: getIDFromMention(target) };
 	else {
 		let result: any = await getPlayerAPI_name(interaction, target);
-		if (result) return (target = { steam_id: result });
+		if (result) return (target = { steam_id: result.steam_id });
 		result = await getPlayerAPI_steamID(interaction, target);
 		if (result) return (target = { steam_id: result.steam_id });
 		else return (target = {});
@@ -216,6 +216,7 @@ export const getMapsAPI = async (interaction: Interaction) => {
 		.get(`https://kztimerglobal.com/api/v2.0/maps?`, {
 			params: {
 				limit: 9999,
+				is_validated: true,
 			},
 		})
 		.then((response) => (globalMaps = response.data || [{}]))
@@ -241,7 +242,7 @@ export const getMapsKZGO = async (interaction: Interaction) => {
 export const getMapcycle = async (interaction: Interaction) => {
 	let mapcycle: string[] = [];
 	await axios
-		.get(`https://kzmaps.tangoworldwide.net/mapcycles/gokz.txt`)
+		.get(`https://maps.cawkz.net/mapcycles/gokz.txt`)
 		.then((response) => {
 			const maps = response.data;
 			mapcycle = maps.split('\r\n') || [];

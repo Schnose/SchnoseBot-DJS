@@ -80,11 +80,14 @@ module.exports = {
 					description: `Check someone's personal best on a map.`,
 					value: `pb-value`,
 				},
+				/*
+				* this will be added later
 				{
 					label: `/profile`,
 					description: `Check a player profile.`,
 					value: `profile-value`,
 				},
+				*/
 				{
 					label: `/random`,
 					description: `Get a random KZ map. You can sort by filters if you want :)`,

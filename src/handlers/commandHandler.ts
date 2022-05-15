@@ -129,10 +129,13 @@ export async function commandHandler(client: any) {
 						embedDescription = `This command will show you your (or another player's) best time on a map.\nYou can specify the following parameters:\n> map*\n> target\n> mode\n\n*required`;
 						break;
 
+					/*
+						* this will be added later
 					case 'profile-value':
 						embedTitle = `/profile`;
 						embedDescription = `This command will give you an overview of your (or another player's) map completion, current points, WR count and mode preference.`;
 						break;
+						*/
 
 					case 'random-value':
 						embedTitle = `/random`;
