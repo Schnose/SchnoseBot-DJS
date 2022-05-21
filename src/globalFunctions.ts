@@ -91,8 +91,8 @@ export const answer = async (interaction: Interaction, input: InteractionReplyOp
 };
 
 // Convert Discord @mention into user's ID
-export const getIDFromMention = (mention: string) => {
-	if (!mention) return;
+export const getIDFromMention = (mention: string | number) => {
+	if (typeof mention == 'number') return mention;
 
 	if (mention.startsWith('<@') && mention.endsWith('>')) {
 		mention = mention.slice(2, -1);
@@ -103,6 +103,7 @@ export const getIDFromMention = (mention: string) => {
 
 		return mention;
 	}
+	return mention;
 };
 
 /* KZ */
