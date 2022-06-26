@@ -131,8 +131,8 @@ async function req(
 	await axios
 		.get(`https://kztimerglobal.com/api/v2.0/${URI}`, options)
 		.then(async (r) => {
-			// console.log(r.data);
-			// console.log(type.safeParse(r.data[0]));
+			console.log(r.data);
+			console.log(type.safeParse(r.data[0]));
 			if (type.safeParse(r.data[0]).success || type.safeParse(r.data).success)
 				return (response = { success: true, data: r.data });
 			else return (response = { success: false });
@@ -397,20 +397,10 @@ export async function getMapsKZGO() {
 
 // checks if a SteamID is registered in the GlobalAPI
 export async function isKZPlayer(steamID: string) {
-	let response = false;
-	await axios
-		.get(`https://kztimerglobal.com/api/v2.0/players/`, {
-			params: { steam_id: steamID },
-		})
-		.then((r) => {
-			if (!r.data[0]) return (response = false);
-			if (r.data[0].name === null) return (response = false);
-			else return (response = true);
-		})
-		.catch((err) => {
-			return handleErr(err);
-		});
-	return response;
+	const response = await req(`records/top?`, record, {
+		params: { steam_id: steamID },
+	});
+	return response.success;
 }
 
 // check if a map is global
