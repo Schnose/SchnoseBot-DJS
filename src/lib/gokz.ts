@@ -39,6 +39,12 @@ export const mode = z.object({
 });
 export type mode = z.infer<typeof mode>;
 
+export const modeMap = new Map();
+modeMap.set("kz_timer", "KZT");
+modeMap.set("kz_simple", "SKZ");
+modeMap.set("kz_vanilla", "VNL");
+modeMap.set(null, "None");
+
 export const player = z.object({
 	steamid64: z
 		.union([z.string(), z.number(), z.bigint(), z.undefined()])
