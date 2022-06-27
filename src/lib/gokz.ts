@@ -131,8 +131,6 @@ async function req(
 	await axios
 		.get(`https://kztimerglobal.com/api/v2.0/${URI}`, options)
 		.then(async (r) => {
-			console.log(r.data);
-			console.log(type.safeParse(r.data[0]));
 			if (type.safeParse(r.data[0]).success || type.safeParse(r.data).success)
 				return (response = { success: true, data: r.data });
 			else return (response = { success: false });
@@ -174,7 +172,7 @@ export async function getMode(
 // gets info on a player
 export async function getPlayer(
 	input: string
-): Promise<{ success: boolean; data?: player }> {
+): Promise<{ success: boolean; data?: player[] }> {
 	return await req(`players?`, player, {
 		params: isSteamID(input) ? { steam_id: input } : { name: input },
 	});
