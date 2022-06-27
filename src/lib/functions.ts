@@ -64,3 +64,14 @@ export async function answer(
 	if (interaction.deferred === true) return interaction.editReply(input);
 	else return interaction.reply(input);
 }
+
+// mongoDB
+export async function errDB(err: unknown) {
+	console.error(err);
+	return {
+		success: false,
+		error: err,
+		message:
+			"Something went wrong when connecting to the Database. Please report this bug on [GitHub](https://github.com/Schnose/SchnoseBot-DJS/issues) or message `AlplhaKeks#9826`.",
+	};
+}
