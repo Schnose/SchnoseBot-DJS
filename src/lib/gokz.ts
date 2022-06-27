@@ -142,42 +142,57 @@ async function req(
 }
 
 // gets all maps from api
-export async function getMapsAPI() {
+export async function getMapsAPI(): Promise<{
+	success: boolean;
+	data?: map[];
+}> {
 	return await req(`maps?`, map, {
 		params: { is_validated: true, limit: 999 },
 	});
 }
 
 // gets a single map from api
-export async function getMapAPI(mapName: string) {
+export async function getMapAPI(
+	mapName: string
+): Promise<{ success: boolean; data?: map }> {
 	return await req(`maps/name/${mapName}`, map, {});
 }
 
 // gets all modes from the api
-export async function getModes() {
+export async function getModes(): Promise<{ success: boolean; data?: mode[] }> {
 	return await req(`modes?`, mode, {});
 }
 
 // gets a single mode from api
-export async function getMode(input: string | number) {
+export async function getMode(
+	input: string | number
+): Promise<{ success: boolean; data?: mode }> {
 	const link = typeof input === "string" ? `modes/name/` : `modes/id/`;
 	return await req(link + input, mode, {});
 }
 
 // gets info on a player
-export async function getPlayer(input: string) {
+export async function getPlayer(
+	input: string
+): Promise<{ success: boolean; data?: player }> {
 	return await req(`players?`, player, {
 		params: isSteamID(input) ? { steam_id: input } : { name: input },
 	});
 }
 
 // gets all map filters
-export async function getFilters() {
+export async function getFilters(): Promise<{
+	success: boolean;
+	data?: filter[];
+}> {
 	return await req(`record_filters?`, filter, { params: { limit: 9999 } });
 }
 
 // gets all filters for a specific map
-export async function getFilter(mapID: number, course: number) {
+export async function getFilter(
+	mapID: number,
+	course: number
+): Promise<{ success: boolean; data?: filter[] }> {
 	return await req(`record_filters?`, filter, {
 		params: {
 			map_ids: mapID,
@@ -193,7 +208,7 @@ export async function getWR(
 	course: number,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: record }> {
 	return await req(`records/top?`, record, {
 		params: {
 			map_name: mapName,
@@ -212,7 +227,7 @@ export async function getPB(
 	course: number,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: record }> {
 	return await req(
 		`records/top?` +
 			(isSteamID(identifier) ? `steam_id=` : `player_name=`) +
@@ -235,7 +250,7 @@ export async function getRecent(
 	identifier: string,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: record }> {
 	const response = await req(
 		`records/top?` +
 			(isSteamID(identifier) ? `steam_id=` : `player_name=`) +
@@ -267,7 +282,7 @@ export async function getTimes(
 	identifier: string,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: record[] }> {
 	return await req(
 		`records/top?` +
 			(isSteamID(identifier) ? `steam_id=` : `player_name=`) +
@@ -285,7 +300,9 @@ export async function getTimes(
 }
 
 // gets the #placement of a record
-export async function getPlace(r: record) {
+export async function getPlace(
+	r: record
+): Promise<{ success: boolean; data?: number }> {
 	return await req(`records/place/${r.id}`, z.number(), {});
 }
 
@@ -294,7 +311,7 @@ export async function getPoints(
 	identifier: string,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: number }> {
 	const response = await req(
 		`records/top?` +
 			(isSteamID(identifier) ? `steam_id=` : `player_name=`) +
@@ -323,7 +340,7 @@ export async function getMaptop(
 	course: number,
 	mode: string,
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: record[] }> {
 	return await req(`records/top?`, record, {
 		params: {
 			map_name: mapName,
@@ -340,7 +357,7 @@ export async function getTop(
 	modeID: number,
 	courses: number[],
 	runtype: boolean
-) {
+): Promise<{ success: boolean; data?: any[] }> {
 	let link = "";
 	courses.forEach((c) => (link += `stages=${c}&`));
 	return await req(`records/top/world_records?` + link, z.unknown(), {
@@ -354,7 +371,10 @@ export async function getTop(
 }
 
 // gets a list of all global map names
-export async function getMapcycle() {
+export async function getMapcycle(): Promise<{
+	success: boolean;
+	data?: string[];
+}> {
 	let response: { success: boolean; data?: any } = { success: false };
 	await axios
 		.get(`https://maps.cawkz.net/mapcycles/gokz.txt`)
@@ -370,7 +390,10 @@ export async function getMapcycle() {
 }
 
 // gets the tier of a map
-export async function getTier(mapName: string, mapList: map[]) {
+export async function getTier(
+	mapName: string,
+	mapList: map[]
+): Promise<{ success: boolean; data?: number }> {
 	let response: { success: boolean; data?: any } = { success: false };
 	mapList.forEach((m: map) => {
 		if (m.name === mapName)
@@ -380,7 +403,10 @@ export async function getTier(mapName: string, mapList: map[]) {
 }
 
 // gets all maps from kzgo.eu
-export async function getMapsKZGO() {
+export async function getMapsKZGO(): Promise<{
+	success: boolean;
+	data?: kzgomap[];
+}> {
 	let response: { success: boolean; data?: any } = { success: false };
 	await axios
 		.get(`https://kzgo.eu/api/maps/`)
@@ -396,7 +422,7 @@ export async function getMapsKZGO() {
 }
 
 // checks if a SteamID is registered in the GlobalAPI
-export async function isKZPlayer(steamID: string) {
+export async function isKZPlayer(steamID: string): Promise<boolean> {
 	const response = await req(`records/top?`, record, {
 		params: { steam_id: steamID },
 	});
@@ -404,7 +430,10 @@ export async function isKZPlayer(steamID: string) {
 }
 
 // check if a map is global
-export async function isGlobal(mapName: string, mapList: map[]) {
+export async function isGlobal(
+	mapName: string,
+	mapList: map[]
+): Promise<{ success: boolean; data?: map }> {
 	let response: { success: boolean; data?: any } = { success: false };
 	mapList.forEach((m) => {
 		if (m.name === mapName) return (response = { success: true, data: m });
@@ -413,7 +442,10 @@ export async function isGlobal(mapName: string, mapList: map[]) {
 }
 
 // check which kind of target was specified
-export function checkTarget(target: any) {
+export function checkTarget(target: any): {
+	type: "discordID" | "mention" | "SteamID" | "name";
+	value: any;
+} {
 	if (!isNaN(target)) return { type: "discordID", value: target };
 	else if (target.startsWith("<@") && target.endsWith(">"))
 		return { type: "mention", value: target.slice(3, -1) };
